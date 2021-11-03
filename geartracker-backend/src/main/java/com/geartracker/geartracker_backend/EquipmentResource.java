@@ -1,5 +1,6 @@
 package com.geartracker.geartracker_backend;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,7 +17,6 @@ public class EquipmentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipments() {
-		
 		
 		return repo.getEquipments();
 	}
