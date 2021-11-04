@@ -7,11 +7,12 @@ import java.sql.*;
 
 public class EquipmentRepository {
 
-	Connection conn = null;
+//	Connection conn = null;
+	List<Equipment> equipments = new ArrayList<>();
 	
 	
 	public EquipmentRepository() {
-//		String url = "jdbc:mysql://127.0.0.1/sports_db";
+//		String url = "jdbc:mysql://127.0.0.1:3306/sports_db";
 //		String username = "rohit";
 //		String password = "1256156@Rk";
 ////		String connectionString = "jdbc:mysql://localhost:3306/sports_db?user=rohit&password=1256156@Rk&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true";
@@ -25,11 +26,19 @@ public class EquipmentRepository {
 //			System.out.println("hello");
 //			System.out.println(e);
 //		}
+		Equipment e1 = new Equipment();
+		e1.setId("e1");
+		e1.setName("e1");
+		e1.setReserved(false);
+		e1.setStatus("vacant");
+		
+		
+		equipments.add(e1);
 		
 	}
 	
 	public List<Equipment> getEquipments() {
-		List<Equipment> equipments = new ArrayList<>();
+		
 		
 		
 //		String sqlQuery = "select * from equipment";
@@ -46,15 +55,25 @@ public class EquipmentRepository {
 //		} catch(Exception e) {
 //			System.out.println(e);
 //		}
-		Equipment e1 = new Equipment();
-		e1.setId("e1");
-		e1.setName("e1");
-		e1.setReserved(false);
-		e1.setStatus("vacant");
 		
-		
-		equipments.add(e1);
-		
-		return equipments;
+		return this.equipments;
+	}
+	
+	public Equipment getEquipment(String id) {
+		for(Equipment e: this.equipments) {
+			if(e.getId().equals(id)) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	public void createEquipment(Equipment e) {
+		this.equipments.add(e);
+	}
+	
+	public Equipment editEquipment(String id, Equipment newE) {
+		// Code for editing
+		return newE;
 	}
 }
