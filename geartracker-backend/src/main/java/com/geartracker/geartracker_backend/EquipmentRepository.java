@@ -24,7 +24,7 @@ public class EquipmentRepository {
 		
 	}
 	
-	public List<Equipment> getEquipments() {
+	public List<Equipment> getEquipmentsList() {
 		String sqlQuery = "select * from equipment";
 		try {
 			Statement st = conn.createStatement();
@@ -50,7 +50,7 @@ public class EquipmentRepository {
 		return this.equipments;
 	}
 	
-	public Equipment getEquipment(String id) {
+	public Equipment getEquipmentById(String id) {
 //		for(Equipment e: this.equipments) {
 //			if(e.getId().equals(id)) {
 //				return e;
