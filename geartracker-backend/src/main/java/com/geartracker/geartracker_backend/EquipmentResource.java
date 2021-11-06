@@ -20,13 +20,13 @@ public class EquipmentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipments() {
-		return repo.getEquipments();
+		return repo.getEquipmentsList();
 	}
 	
 	@GET
 	@Path("/{id}")
 	public Equipment getEquipment(@PathParam("id") String id) { 
-		return repo.getEquipment(id);
+		return repo.getEquipmentById(id);
 	}
 	
 	@POST
