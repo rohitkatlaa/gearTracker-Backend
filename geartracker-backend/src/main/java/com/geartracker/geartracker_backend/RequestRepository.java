@@ -3,6 +3,7 @@ package com.geartracker.geartracker_backend;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
+import java.time.LocalDate;
 
 public class RequestRepository {
 
@@ -35,7 +36,15 @@ public class RequestRepository {
 				r.setUserId(rs.getString("id_user"));
 				r.setEquipmentId(rs.getString("id_equipment"));
 				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
-				r.setReturnDate(rs.getDate("return_date").toLocalDate());
+				Date rd = rs.getDate("return_date");
+				if(rs.wasNull())
+				{
+					r.setReturnDate((LocalDate) null);
+				}
+				else
+				{
+					r.setReturnDate(rd.toLocalDate());
+				}
 				r.setStatus(rs.getString("request_status"));
 				this.requests.add(r);
 			}
@@ -58,7 +67,17 @@ public class RequestRepository {
 				r.setUserId(rs.getString("id_user"));
 				r.setEquipmentId(rs.getString("id_equipment"));
 				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
-				r.setReturnDate(rs.getDate("return_date").toLocalDate());
+				Date rd = rs.getDate("return_date");
+				if(rs.wasNull())
+				{
+					System.out.println("null return date");
+					r.setReturnDate((LocalDate) null);
+				}
+				else
+				{
+					System.out.println("Rona aa rha hai");
+					r.setReturnDate(rd.toLocalDate());
+				}
 				r.setStatus(rs.getString("request_status"));
 			}
 			
@@ -77,11 +96,15 @@ public class RequestRepository {
 			st.setString(2,r.getUserId());
 			st.setString(3, r.getEquipmentId());
 			st.setDate(4, Date.valueOf(r.getIssueDate()));
-			st.setDate(5, Date.valueOf(r.getReturnDate()));
+			if(r.getReturnDate()==null) {
+				st.setNull(5, Types.DATE);
+			}
+			else{
+				st.setDate(5, Date.valueOf(r.getReturnDate()));
+			}
 			st.setString(6, r.getStatus());
 			st.executeUpdate();
 		} catch(Exception exc) {
-			System.out.println("Lag gaye");
 			System.out.println(exc);
 		}
 	}
@@ -94,7 +117,12 @@ public class RequestRepository {
 		    st.setString(2, newR.getUserId());
 		    st.setString(3, newR.getEquipmentId());
 		    st.setDate(4, Date.valueOf(newR.getIssueDate()));
-			st.setDate(5, Date.valueOf(newR.getReturnDate()));
+			if(newR.getReturnDate()==null) {
+				st.setNull(5, Types.DATE);
+			}
+			else{
+				st.setDate(5, Date.valueOf(newR.getReturnDate()));
+			}
 			st.setString(6, newR.getStatus());
 		    st.executeUpdate();
 		                                                             
