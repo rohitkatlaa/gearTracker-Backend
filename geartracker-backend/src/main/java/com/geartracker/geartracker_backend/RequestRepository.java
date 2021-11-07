@@ -18,16 +18,7 @@ public class RequestRepository {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
-		} catch(Exception e) {
-			System.out.println("hello");
-			System.out.println(e);
-		}
-		
-	}
-	
-	public List<Request> getRequestsList() {
-		String sqlQuery = "select * from requests";
-		try {
+			String sqlQuery = "select * from requests";
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery);
 			while(rs.next()) {
@@ -48,47 +39,30 @@ public class RequestRepository {
 				r.setStatus(rs.getString("request_status"));
 				this.requests.add(r);
 			}
-			
 		} catch(Exception e) {
+			System.out.println("hello");
 			System.out.println(e);
 		}
-
+		
+	}
+	
+	public List<Request> getRequestsList() {
 		return this.requests;
 	}
 	
-	public Request getRequestById(String id) {
-		String sqlQuery = "select * from requests where request_id = '" + id + "'";
-		Request r = new Request();
-		try {
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(sqlQuery);
-			if(rs.next()) {
-				r.setRequestId(rs.getInt("request_id"));
-				r.setUserId(rs.getString("id_user"));
-				r.setEquipmentId(rs.getString("id_equipment"));
-				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
-				Date rd = rs.getDate("return_date");
-				if(rs.wasNull())
-				{
-					System.out.println("null return date");
-					r.setReturnDate((LocalDate) null);
-				}
-				else
-				{
-					System.out.println("Rona aa rha hai");
-					r.setReturnDate(rd.toLocalDate());
-				}
-				r.setStatus(rs.getString("request_status"));
+	public Request getRequestById(int id) {
+		for(Request r: this.requests) {
+			if(r.getRequestId() == id) {
+				return r;
 			}
-			
-		} catch(Exception exc) {
-			System.out.println(exc);
-			return null;
 		}
-		return r;
+		return null;
 	}
 	
 	public void createRequest(Request r) {
+		//Updating the local list
+		this.requests.add(r);
+		//Updating the database
 		String sqlQuery = "insert into requests (request_id,id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?,?)";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
@@ -109,7 +83,26 @@ public class RequestRepository {
 		}
 	}
 	
-	public Request editRequest(String id, Request newR) {
+	public Request editRequest(int id, Request newR) {
+		//Updating the local list
+		for(Request r: this.requests) {
+			if(r.getRequestId() == id) {
+				r.setRequestId(newR.getRequestId());
+				r.setUserId(newR.getUserId());
+				r.setEquipmentId(newR.getEquipmentId());
+				r.setIssueDate(newR.getIssueDate());
+				if(newR.getReturnDate() == null)
+				{
+					r.setReturnDate((LocalDate) null);
+				}
+				else
+				{
+					r.setReturnDate(newR.getReturnDate());
+				}
+				r.setStatus(newR.getStatus());
+			}
+		}
+		//Updating the database
 		String sqlQuery = "UPDATE requests SET request_id=?,id_user=?,id_equipment=?,issue_date=?,return_date=?,request_status=? WHERE request_id = " + id;
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
