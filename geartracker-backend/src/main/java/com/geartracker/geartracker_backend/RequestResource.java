@@ -25,7 +25,7 @@ public class RequestResource {
 	
 	@GET
 	@Path("/{id}")
-	public Request getRequestById(@PathParam("id") String id) { 
+	public Request getRequestById(@PathParam("id") int id) { 
 		return repo.getRequestById(id);
 	}
 	
@@ -37,7 +37,7 @@ public class RequestResource {
 	
 	@PUT
 	@Path("/{id}")
-	public Request editRequest(@PathParam("id") String id, Request r) {
+	public Request editRequest(@PathParam("id") int id, Request r) {
 		return repo.editRequest(id, r);
 	}
 }
