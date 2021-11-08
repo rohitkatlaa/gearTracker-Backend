@@ -18,12 +18,21 @@ public class RequestRepository {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
-			String sqlQuery = "select * from requests";
+		} catch(Exception e) {
+			System.out.println("hello");
+			System.out.println(e);
+		}	
+	}
+	
+	public List<Request> getRequestsList() {
+		List<Request> requests = new ArrayList<>();
+		String sqlQuery = "select * from requests";
+		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery);
 			while(rs.next()) {
 				Request r = new Request();
-				r.setRequestId(rs.getInt("request_id"));
+				r.setRequestId(rs.getInt("surrogate_id"));
 				r.setUserId(rs.getString("id_user"));
 				r.setEquipmentId(rs.getString("id_equipment"));
 				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
@@ -37,33 +46,47 @@ public class RequestRepository {
 					r.setReturnDate(rd.toLocalDate());
 				}
 				r.setStatus(rs.getString("request_status"));
-				this.requests.add(r);
+				requests.add(r);
 			}
+			
 		} catch(Exception e) {
-			System.out.println("hello");
 			System.out.println(e);
 		}
-		
-	}
-	
-	public List<Request> getRequestsList() {
-		return this.requests;
+		return requests;
 	}
 	
 	public Request getRequestById(int id) {
-		for(Request r: this.requests) {
-			if(r.getRequestId() == id) {
-				return r;
-			}
+		String sqlQuery = "select * from requests where surrogate_id = '" + id + "'";
+		Request r = new Request();
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				r.setRequestId(rs.getInt("surrogate_id"));
+				r.setUserId(rs.getString("id_user"));
+				r.setEquipmentId(rs.getString("id_equipment"));
+				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
+				Date rd = rs.getDate("return_date");
+				if(rs.wasNull())
+				{
+					System.out.println("null return date");
+					r.setReturnDate((LocalDate) null);
+				}
+				else
+				{
+					r.setReturnDate(rd.toLocalDate());
+				}
+				r.setStatus(rs.getString("request_status"));
+			}	
+		} catch(Exception exc) {
+			System.out.println(exc);
+			return null;
 		}
-		return null;
+		return r;
 	}
 	
 	public void createRequest(Request r) {
-		//Updating the local list
-		this.requests.add(r);
-		//Updating the database
-		String sqlQuery = "insert into requests (request_id,id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?,?)";
+		String sqlQuery = "insert into requests (surrogate_id,id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?,?)";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 			st.setInt(1,r.getRequestId());
@@ -84,39 +107,19 @@ public class RequestRepository {
 	}
 	
 	public Request editRequest(int id, Request newR) {
-		//Updating the local list
-		for(Request r: this.requests) {
-			if(r.getRequestId() == id) {
-				r.setRequestId(newR.getRequestId());
-				r.setUserId(newR.getUserId());
-				r.setEquipmentId(newR.getEquipmentId());
-				r.setIssueDate(newR.getIssueDate());
-				if(newR.getReturnDate() == null)
-				{
-					r.setReturnDate((LocalDate) null);
-				}
-				else
-				{
-					r.setReturnDate(newR.getReturnDate());
-				}
-				r.setStatus(newR.getStatus());
-			}
-		}
-		//Updating the database
-		String sqlQuery = "UPDATE requests SET request_id=?,id_user=?,id_equipment=?,issue_date=?,return_date=?,request_status=? WHERE request_id = " + id;
+		String sqlQuery = "UPDATE requests SET id_user=?,id_equipment=?,issue_date=?,return_date=?,request_status=? WHERE surrogate_id = " + id;
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
-			st.setInt(1, newR.getRequestId());
-		    st.setString(2, newR.getUserId());
-		    st.setString(3, newR.getEquipmentId());
-		    st.setDate(4, Date.valueOf(newR.getIssueDate()));
+		    st.setString(1, newR.getUserId());
+		    st.setString(2, newR.getEquipmentId());
+		    st.setDate(3, Date.valueOf(newR.getIssueDate()));
 			if(newR.getReturnDate()==null) {
-				st.setNull(5, Types.DATE);
+				st.setNull(4, Types.DATE);
 			}
 			else{
-				st.setDate(5, Date.valueOf(newR.getReturnDate()));
+				st.setDate(4, Date.valueOf(newR.getReturnDate()));
 			}
-			st.setString(6, newR.getStatus());
+			st.setString(5, newR.getStatus());
 		    st.executeUpdate();
 		                                                             
 		}catch (Exception ex) {
