@@ -5,10 +5,7 @@ import java.util.List;
 import java.sql.*;
 
 public class EquipmentRepository {
-
-	List<Equipment> equipments = new ArrayList<>();
 	Connection conn = null;
-	
 	
 	public EquipmentRepository() {
 		String url = "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
@@ -17,47 +14,66 @@ public class EquipmentRepository {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
-			String sqlQuery = "select * from equipment";
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery(sqlQuery);
-			while(rs.next()) 
-				{
-					Equipment e = new Equipment();
-					e.setId(rs.getString("equipment_id"));
-					e.setName(rs.getString("equipment_category"));
-					e.setDescription(rs.getString("equipment_description"));
-					e.setStatus(rs.getString("equipment_status"));
-					int bool = rs.getInt("sports_team");
-					if(bool==0)
-						e.setReserved(false);
-					else
-						e.setReserved(true);
-					this.equipments.add(e);
-				}
-			}
-			 catch(Exception e) {
+		} catch(Exception e) {
 			System.out.println("hello");
 			System.out.println(e);
-		}	
+		}
+		
 	}
 	
 	public List<Equipment> getEquipmentsList() {
-		return this.equipments;
+		List<Equipment> equipments = new ArrayList<>();
+		String sqlQuery = "select * from equipment";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			while(rs.next()) {
+				Equipment e = new Equipment();
+				e.setId(rs.getString("equipment_id"));
+				e.setName(rs.getString("equipment_category"));
+				e.setDescription(rs.getString("equipment_description"));
+				e.setStatus(rs.getString("equipment_status"));
+				int bool = rs.getInt("sports_team");
+				if(bool==0)
+					e.setReserved(false);
+				else
+					e.setReserved(true);
+				equipments.add(e);
+			}
+			
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+
+		return equipments;
 	}
 	
 	public Equipment getEquipmentById(String id) {
-		for(Equipment e: this.equipments) {
-			if(e.getId().equals(id)) {
-				return e;
+		String sqlQuery = "select * from equipment where equipment_id = '" + id + "'";
+		Equipment e = new Equipment();
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				e.setId(rs.getString("equipment_id"));
+				e.setName(rs.getString("equipment_category"));
+				e.setDescription(rs.getString("equipment_description"));
+				e.setStatus(rs.getString("equipment_status"));
+				int bool = rs.getInt("sports_team");
+				if(bool==0)
+					e.setReserved(false);
+				else
+					e.setReserved(true);
 			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+			return null;
 		}
-		return null;
+		return e;
 	}
 	
 	public void createEquipment(Equipment e) {
-		//Updating the local list
-		this.equipments.add(e);
-		//Updating the database
 		String sqlQuery = "insert into equipment (equipment_id,equipment_category,sports_team,equipment_status,equipment_description) values (?,?,?,?,?)";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
@@ -78,17 +94,6 @@ public class EquipmentRepository {
 	}
 	
 	public Equipment editEquipment(String id, Equipment newE) {
-		//Updating the local list
-		for(Equipment e: this.equipments) {
-			if(e.getId().equals(id)) {
-				e.setId(newE.getId());
-				e.setName(newE.getName());
-				e.setStatus(newE.getStatus());
-				e.setDescription(newE.getDescription());
-				e.setReserved(newE.isReserved());
-			}
-		}
-		//Updating the database
 		String sqlQuery = "UPDATE equipment SET equipment_id=?,equipment_category=?,sports_team=?,equipment_status=?,equipment_description=? WHERE equipment_id = '" + id + "'";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
