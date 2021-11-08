@@ -8,6 +8,7 @@ public class Equipment {
 	private String name;
 	private String status;
 	private boolean reserved;
+	private String description;
 
 	public String getId() {
 		return id;
@@ -32,6 +33,13 @@ public class Equipment {
 	}
 	public void setReserved(boolean reserved) {
 		this.reserved = reserved;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }
