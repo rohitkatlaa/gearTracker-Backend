@@ -44,7 +44,7 @@ public class RequestResource {
 	
 	@DELETE
 	@Path("/{id}")
-	public Request deleteRequest(@PathParam("id") String id) { 
+	public Request deleteRequest(@PathParam("id") int id) { 
 		System.out.println(id);
 		return null;
 	}

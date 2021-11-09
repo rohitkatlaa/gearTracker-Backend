@@ -5,8 +5,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Request {
 	private int requestId;
-	private String equipmentId;
-	private String userId;
+	private int equipmentId;
+	private int userId;
 	private String status;
 	private LocalDate issueDate;
 	private LocalDate returnDate;
@@ -20,19 +20,19 @@ public class Request {
 		this.requestId = requestId;
 	}
 
-	public String getEquipmentId() {
+	public int getEquipmentId() {
 		return equipmentId;
 	}
 
-	public void setEquipmentId(String equipmentId) {
+	public void setEquipmentId(int equipmentId) {
 		this.equipmentId = equipmentId;
 	}
 
-	public String getUserId() {
+	public int getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 

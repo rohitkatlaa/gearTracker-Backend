@@ -33,8 +33,8 @@ public class RequestRepository {
 			while(rs.next()) {
 				Request r = new Request();
 				r.setRequestId(rs.getInt("surrogate_id"));
-				r.setUserId(rs.getString("id_user"));
-				r.setEquipmentId(rs.getString("id_equipment"));
+				r.setUserId(rs.getInt("id_user"));
+				r.setEquipmentId(rs.getInt("id_equipment"));
 				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
 				Date rd = rs.getDate("return_date");
 				if(rs.wasNull())
@@ -63,8 +63,8 @@ public class RequestRepository {
 			ResultSet rs = st.executeQuery(sqlQuery);
 			if(rs.next()) {
 				r.setRequestId(rs.getInt("surrogate_id"));
-				r.setUserId(rs.getString("id_user"));
-				r.setEquipmentId(rs.getString("id_equipment"));
+				r.setUserId(rs.getInt("id_user"));
+				r.setEquipmentId(rs.getInt("id_equipment"));
 				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
 				Date rd = rs.getDate("return_date");
 				if(rs.wasNull())
@@ -90,8 +90,8 @@ public class RequestRepository {
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 			st.setInt(1,r.getRequestId());
-			st.setString(2,r.getUserId());
-			st.setString(3, r.getEquipmentId());
+			st.setInt(2,r.getUserId());
+			st.setInt(3, r.getEquipmentId());
 			st.setDate(4, Date.valueOf(r.getIssueDate()));
 			if(r.getReturnDate()==null) {
 				st.setNull(5, Types.DATE);
@@ -110,8 +110,8 @@ public class RequestRepository {
 		String sqlQuery = "UPDATE requests SET id_user=?,id_equipment=?,issue_date=?,return_date=?,request_status=? WHERE surrogate_id = " + id;
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
-		    st.setString(1, newR.getUserId());
-		    st.setString(2, newR.getEquipmentId());
+		    st.setInt(1, newR.getUserId());
+		    st.setInt(2, newR.getEquipmentId());
 		    st.setDate(3, Date.valueOf(newR.getIssueDate()));
 			if(newR.getReturnDate()==null) {
 				st.setNull(4, Types.DATE);
