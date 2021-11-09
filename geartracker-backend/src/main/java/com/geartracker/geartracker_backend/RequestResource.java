@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -39,5 +40,12 @@ public class RequestResource {
 	@Path("/{id}")
 	public Request editRequest(@PathParam("id") int id, Request r) {
 		return repo.editRequest(id, r);
+	}
+	
+	@DELETE
+	@Path("/{id}")
+	public Request deleteRequest(@PathParam("id") String id) { 
+		System.out.println(id);
+		return null;
 	}
 }

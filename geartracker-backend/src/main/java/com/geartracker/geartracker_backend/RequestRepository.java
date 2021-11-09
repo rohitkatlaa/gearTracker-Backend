@@ -12,9 +12,9 @@ public class RequestRepository {
 	
 	
 	public RequestRepository() {
-		String url = "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
-		String username = "root";
-		String password = "narrativearc";
+		String url = Constants.SQL_URL;
+		String username = Constants.SQL_USERNAME;
+		String password = Constants.SQL_PASSWORD;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
