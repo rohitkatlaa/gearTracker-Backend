@@ -39,7 +39,9 @@ public class RequestRepository {
 				Date rd = rs.getDate("return_date");
 				if(rs.wasNull())
 				{
+					System.out.println("null return date");
 					r.setReturnDate((LocalDate) null);
+					
 				}
 				else
 				{

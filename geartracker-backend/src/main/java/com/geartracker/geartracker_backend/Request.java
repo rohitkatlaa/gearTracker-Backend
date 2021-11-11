@@ -9,7 +9,7 @@ public class Request {
 	private int userId;
 	private String status;
 	private LocalDate issueDate;
-	private LocalDate returnDate;
+	private LocalDate returnDate = null;
 
 	// Getter and setter functions. Can be modified or dropped if unnecessary
 	public int getRequestId() {

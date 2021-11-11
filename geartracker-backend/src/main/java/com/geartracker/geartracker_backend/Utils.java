@@ -7,4 +7,9 @@ public class Utils {
 		LocalDate localDate = LocalDate.parse(s_date);
 		return localDate;
 	}
+	
+	public static String date_to_string(LocalDate s_date) {
+		String date = s_date.toString();
+		return date;
+	}
 }
