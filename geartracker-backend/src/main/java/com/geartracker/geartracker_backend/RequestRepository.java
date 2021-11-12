@@ -31,23 +31,18 @@ public class RequestRepository {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery);
 			while(rs.next()) {
-				Request r = new Request();
-				r.setRequestId(rs.getInt("surrogate_id"));
-				r.setUserId(rs.getInt("id_user"));
-				r.setEquipmentId(rs.getInt("id_equipment"));
-				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
+				int request_id = rs.getInt("surrogate_id");
+				int user_id = rs.getInt("id_user");
+				int equipment_id = rs.getInt("id_equipment");
+				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date rd = rs.getDate("return_date");
-				if(rs.wasNull())
+				LocalDate return_date = (LocalDate)null;
+				if(!rs.wasNull())
 				{
-					System.out.println("null return date");
-					r.setReturnDate((LocalDate) null);
-					
+					return_date = rd.toLocalDate();
 				}
-				else
-				{
-					r.setReturnDate(rd.toLocalDate());
-				}
-				r.setStatus(rs.getString("request_status"));
+				String status = rs.getString("request_status");
+				Request r = new Request(request_id, equipment_id, user_id, status, issue_date, return_date);
 				requests.add(r);
 			}
 			
@@ -59,26 +54,23 @@ public class RequestRepository {
 	
 	public Request getRequestById(int id) {
 		String sqlQuery = "select * from requests where surrogate_id = '" + id + "'";
-		Request r = new Request();
+		Request r = null;
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery);
 			if(rs.next()) {
-				r.setRequestId(rs.getInt("surrogate_id"));
-				r.setUserId(rs.getInt("id_user"));
-				r.setEquipmentId(rs.getInt("id_equipment"));
-				r.setIssueDate(rs.getDate("issue_date").toLocalDate());
+				int request_id = rs.getInt("surrogate_id");
+				int user_id = rs.getInt("id_user");
+				int equipment_id = rs.getInt("id_equipment");
+				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date rd = rs.getDate("return_date");
-				if(rs.wasNull())
+				LocalDate return_date = (LocalDate)null;
+				if(!rs.wasNull())
 				{
-					System.out.println("null return date");
-					r.setReturnDate((LocalDate) null);
+					return_date = rd.toLocalDate();
 				}
-				else
-				{
-					r.setReturnDate(rd.toLocalDate());
-				}
-				r.setStatus(rs.getString("request_status"));
+				String status = rs.getString("request_status");
+				r = new Request(request_id, equipment_id, user_id, status, issue_date, return_date);
 			}	
 		} catch(Exception exc) {
 			System.out.println(exc);

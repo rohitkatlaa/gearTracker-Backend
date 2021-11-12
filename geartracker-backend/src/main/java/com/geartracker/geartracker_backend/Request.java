@@ -10,6 +10,15 @@ public class Request {
 	private String status;
 	private LocalDate issueDate;
 	private LocalDate returnDate = null;
+	
+	public Request(int requestId, int equipmentId, int userId, String status, LocalDate issueDate, LocalDate returnDate) {
+		this.requestId = requestId;
+		this.equipmentId = equipmentId;
+		this.userId = userId;
+		this.status = status;
+		this.issueDate = issueDate;
+		this.returnDate = returnDate;
+	}
 
 	// Getter and setter functions. Can be modified or dropped if unnecessary
 	public int getRequestId() {

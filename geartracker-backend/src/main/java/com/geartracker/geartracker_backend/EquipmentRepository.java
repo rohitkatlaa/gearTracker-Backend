@@ -28,16 +28,12 @@ public class EquipmentRepository {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery);
 			while(rs.next()) {
-				Equipment e = new Equipment();
-				e.setId(rs.getString("equipment_id"));
-				e.setName(rs.getString("equipment_category"));
-				e.setDescription(rs.getString("equipment_description"));
-				e.setStatus(rs.getString("equipment_status"));
-				int bool = rs.getInt("sports_team");
-				if(bool==0)
-					e.setReserved(false);
-				else
-					e.setReserved(true);
+				String equipment_id = rs.getString("equipment_id");
+				String name = rs.getString("equipment_category");
+				String description = rs.getString("equipment_description");
+				String status = rs.getString("equipment_status");
+				boolean reserved = (rs.getInt("sports_team")!=0);
+				Equipment e = new Equipment(equipment_id, name, status, reserved, description);
 				equipments.add(e);
 			}
 			
@@ -50,20 +46,17 @@ public class EquipmentRepository {
 	
 	public Equipment getEquipmentById(String id) {
 		String sqlQuery = "select * from equipment where equipment_id = '" + id + "'";
-		Equipment e = new Equipment();
+		Equipment e = null;
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery);
 			if(rs.next()) {
-				e.setId(rs.getString("equipment_id"));
-				e.setName(rs.getString("equipment_category"));
-				e.setDescription(rs.getString("equipment_description"));
-				e.setStatus(rs.getString("equipment_status"));
-				int bool = rs.getInt("sports_team");
-				if(bool==0)
-					e.setReserved(false);
-				else
-					e.setReserved(true);
+				String equipment_id = rs.getString("equipment_id");
+				String name = rs.getString("equipment_category");
+				String description = rs.getString("equipment_description");
+				String status = rs.getString("equipment_status");
+				boolean reserved = (rs.getInt("sports_team")!=0);
+				e = new Equipment(equipment_id, name, status, reserved, description);
 			}
 			
 		} catch(Exception exc) {
