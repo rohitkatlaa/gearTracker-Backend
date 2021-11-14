@@ -7,9 +7,9 @@ public class User {
 	private String password;
 	private String email;
 	private ArrayList <String> roles;
-	private Integer Student;
+	private int student;
 	private int fine;
-	private boolean isSportsMember;
+	private boolean sportsStatus;
 
 //	public User(String _id, String _name, String _password, String _email){
 //		id = _id;
@@ -20,10 +20,10 @@ public class User {
 //	}
 
 	public User(){
-		Student = 0;
+		student = 0;
 		roles = new ArrayList<String>();
 		fine = 0;
-		isSportsMember = false;
+		sportsStatus = false;
 	}
 
 	public String getId() {
@@ -40,7 +40,7 @@ public class User {
 	}
 
 	public String getPassword(){
-		return password;
+		return this.password;
 	}
 
 	public void resetPassword(String newPassword){
@@ -75,16 +75,16 @@ public class User {
 	}
 
 	public boolean getSportsStatus(){
-		return isSportsMember;
+		return sportsStatus;
 	}
 	public void setSportsStatus(boolean _status){
-		isSportsMember = _status;
+		sportsStatus = _status;
 	}
 	
-	public Integer getStudent(){
-		return Student;
+	public int getStudent(){
+		return student;
 	}
-	public void setStudent(Integer _sid){
-		Student = _sid;
+	public void setStudent(int _sid){
+		student = _sid;
 	}
 }

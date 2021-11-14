@@ -35,7 +35,7 @@ public class UserRepository {
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
-					u.setStudent((Integer) null);
+					u.setStudent(0);
 				else
 					u.setStudent(val);	
 				users.add(u);
@@ -46,11 +46,10 @@ public class UserRepository {
 				ResultSet rs2 = st.executeQuery(sqlQuery2);
 				while(rs2.next()) {
 					e.add_roles(rs2.getString("role"));
-					System.out.println("Nachos");
 				}				
 			}
 			for (User e : users) {
-				if(e.getStudent()!= null)
+				if(e.getRoles().contains("student"))
 				{
 					Integer val = e.getStudent();
 					String sqlQuery3 = "select fine,sports_team from student where surrogate_id ="+ val;
@@ -83,7 +82,7 @@ public class UserRepository {
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
-					u.setStudent((Integer) null);
+					u.setStudent(0);
 				else
 					u.setStudent(val);
 			}
@@ -92,7 +91,7 @@ public class UserRepository {
 			while(rs2.next()) {
 				u.add_roles(rs2.getString("role"));
 			}
-			if(u.getStudent()!= null)
+			if(u.getRoles().contains("student"))
 				{
 					Integer val = u.getStudent();
 					String sqlQuery3 = "select fine,sports_team from student where surrogate_id ="+ val;
@@ -112,33 +111,39 @@ public class UserRepository {
 		return u;
 	}
 
-	public void createUser(User u) {
-		String sqlQuery1 = "insert into user (user_id,name,passwrd,email,student) values (?,?,?,?,?)";
+	public User createUser(User u) {
+		ResultSet rs4 = null;
+        int stu_surrogate_id = 0;
 		try {
+			String sqlQuery1 = "insert into user (user_id,name,passwrd,email,student) values (?,?,?,?,?)";
 			PreparedStatement st = conn.prepareStatement(sqlQuery1);
 			st.setString(1,u.getId());
 			st.setString(2,u.getName());
-			System.out.println(u.getName());
 			st.setString(3,u.getPassword());
-			System.out.println(u.getPassword());
 			st.setString(4,u.getEmail());
-			if(u.getStudent()==null)
+			if(u.getRoles().contains("student"))
 			{
-				st.setNull(5, Types.INTEGER);
-				st.executeUpdate();
-			}
-			else
-			{
-				st.setInt(5,u.getStudent());
-				st.executeUpdate();
-				String sqlQuery2 = "insert into student (fine,sports_team) values (?,?)";
-				PreparedStatement st2 = conn.prepareStatement(sqlQuery2);
+				String sqlQuery4 = "insert into student (fine,sports_team) values (?,?)";
+				PreparedStatement st2 = conn.prepareStatement(sqlQuery4,Statement.RETURN_GENERATED_KEYS);
 				st2.setInt(1, u.getFine());
 				if(u.getSportsStatus())
 					st2.setInt(2, 1);
 				else
 					st2.setInt(2, 0);
-				st2.executeUpdate();
+				int row_affected = st2.executeUpdate();
+				if(row_affected==1)
+				{
+					rs4=st2.getGeneratedKeys();
+					if(rs4.next())
+						stu_surrogate_id = rs4.getInt(1); 
+				}
+				st.setInt(5, stu_surrogate_id);
+				st.executeUpdate();
+			}
+			else
+			{
+				st.setNull(5, Types.INTEGER);
+				st.executeUpdate();
 			}
 			int n = u.getRoles().size();
 			String id = u.getId();
@@ -157,23 +162,68 @@ public class UserRepository {
 				st3.addBatch(Queries.get(i));
 			}
 			st3.executeBatch();
-			// for(int i=0;i<n;i++)
-			// {
-			// 	String sqlQuery3 = "insert into user_role (id_user,role) values (?,?)";
-			// 	PreparedStatement st3 = conn.prepareStatement(sqlQuery3);
-			// 	st3.setString(2, u.getRoles().get(i));
-			// 	String sqlQuery4 = "select surrogate_id from user where user_id ='"+ id +"'";
-			// 	Statement st4 = conn.createStatement();
-			// 	ResultSet rs = st4.executeQuery(sqlQuery4);
-			// 	rs.next();
-			// 	st3.setInt(1, rs.getInt("surrogate_id"));
-			// 	st3.executeUpdate();
-			// }
-
 		} catch(Exception exc) {
 			System.out.println(exc);
 		}
+		return getUserById(u.getId());
 	}
-	
+
+	public User editUser(String id,User newU)
+	{
+		String sqlQuery1 = "UPDATE user SET name=?,passwrd=?,email=? WHERE user_id = '" + id + "'";
+		try{
+			PreparedStatement st = conn.prepareStatement(sqlQuery1);
+			st.setString(1,newU.getName());
+			st.setString(2,newU.getPassword());
+			st.setString(3,newU.getEmail());
+			st.executeUpdate();
+			if(newU.getRoles().contains("student"))
+			{
+				String sqlQuery2 = "update student SET fine=?,sports_team=? where surrogate_id = "+ newU.getStudent();
+				PreparedStatement st2 = conn.prepareStatement(sqlQuery2);
+				st2.setInt(1, newU.getFine());
+				System.out.println(newU.getSportsStatus());
+				if(newU.getSportsStatus())
+					st2.setInt(2, 1);
+				else
+					st2.setInt(2, 0);
+				st2.executeUpdate();
+			}
+			ArrayList<String> old_roles = new ArrayList<String>();
+			Statement st3 = conn.createStatement();
+			String sqlQuery4 = "select surrogate_id from user where user_id ='"+ id +"'";
+			ResultSet rs2 = st3.executeQuery(sqlQuery4);
+			rs2.next();
+			int _id = rs2.getInt("surrogate_id");
+			String sqlQuery3 = "select role from user_role where id_user = "+ _id ;
+			ResultSet rs = st3.executeQuery(sqlQuery3);
+			while(rs.next()) {
+				old_roles.add(rs.getString("role"));
+			}
+			ArrayList<String> new_roles = newU.getRoles();
+			
+			
+			for (String e : old_roles) {
+				if(!new_roles.contains(e))
+				{
+					String sqlDel = "delete from user_role where id_user = "+ _id + " AND role = '" + e + "'";
+					System.out.println("I was deleting "+ sqlDel);
+					st3.executeUpdate(sqlDel);
+				}
+			}
+			for (String e : new_roles) {
+				if(!old_roles.contains(e))
+				{
+					String sqlAdd = "insert into user_role (id_user, role) values ("+_id+",'"+ e +"')";
+					System.out.println("I was inserting "+ sqlAdd);
+					st3.executeUpdate(sqlAdd);
+				}
+			}
+		}
+		catch(Exception exc) {
+			System.out.println(exc);
+		} 
+		return getUserById(newU.getId()); 
+	}
 	
 }
