@@ -36,20 +36,16 @@ public class UserResource {
 	@POST
 	public User createUser(String json) {
 		User e = gson.fromJson(json, User.class);
-		repo.createUser(e);
-		return e;
+		User u = repo.createUser(e);
+		return u;
 	}
 	
-	// @PUT
-	// @Path("/{id}")
-	// public User editUser(@PathParam("id") String id, User e) {
-	// 	return repo.editUser(id, e);
-	// }
+	@PUT
+	@Path("/{id}")
+	public User editUser(@PathParam("id") String id, String json) {
+		User e = gson.fromJson(json, User.class);
+		// return e;
+		return repo.editUser(id, e);
+	}
 	
-	// @DELETE
-	// @Path("/{id}")
-	// public User deleteUser(@PathParam("id") String id) { 
-	// 	System.out.println(id);
-	// 	return null;
-	// }
 }
