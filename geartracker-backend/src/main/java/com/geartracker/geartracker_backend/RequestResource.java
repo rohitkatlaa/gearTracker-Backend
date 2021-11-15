@@ -25,6 +25,19 @@ public class RequestResource {
 	}
 	
 	@GET
+	@Path("/student/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Request> getRequestsForStudent(@PathParam("id") String id) {
+		return repo.getRequestsListForStudent(id);
+	}
+	
+	@GET
+	@Path("/approve/{id}")
+	public String approveRequest(@PathParam("id") String id) { 
+		return repo.approveRequest(id);
+	}
+	
+	@GET
 	@Path("/{id}")
 	public Request getRequestById(@PathParam("id") int id) { 
 		return repo.getRequestById(id);
@@ -40,6 +53,12 @@ public class RequestResource {
 	@Path("/{id}")
 	public Request editRequest(@PathParam("id") int id, Request r) {
 		return repo.editRequest(id, r);
+	}
+	
+	@PUT
+	@Path("/close/{id}")
+	public String closeRequest(@PathParam("id") int id, String status) {
+		return repo.closeRequest(id, status);
 	}
 	
 	@DELETE

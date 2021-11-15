@@ -25,6 +25,26 @@ public class EquipmentResource {
 	}
 	
 	@GET
+	@Path("/book/{id}")
+	public String bookEquipment(@PathParam("id") String id) { 
+		return repo.bookEquipment(id);
+	}
+	
+	@GET
+	@Path("/student/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Equipment> getEquipmentsForStudent(@PathParam("id") String id) {
+		return repo.getEquipmentsListForStudent(id);
+	}
+	
+	
+	@GET
+	@Path("/available")
+	public List<Equipment> getAvailableEquipment() { 
+		return repo.getAvailableEquipment();
+	}
+	
+	@GET
 	@Path("/{id}")
 	public Equipment getEquipment(@PathParam("id") String id) { 
 		return repo.getEquipmentById(id);

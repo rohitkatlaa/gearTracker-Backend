@@ -43,6 +43,21 @@ public class EquipmentRepository {
 
 		return equipments;
 	}
+
+	public String bookEquipment(String id) {
+//		Change status if not booked and return success else return failure
+		return "failure";
+	}
+	
+	public List<Equipment> getEquipmentsListForStudent(String id) {
+//		Return List of equipments filtered by student
+		return null;
+	}
+	
+	public List<Equipment> getAvailableEquipment() {
+//		Return List of equipments filtered by availability
+		return null;
+	}
 	
 	public Equipment getEquipmentById(String id) {
 		String sqlQuery = "select * from equipment where equipment_id = '" + id + "'";

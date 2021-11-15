@@ -52,6 +52,16 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	public List<Request> getRequestsListForStudent(String id) {
+//		Return List of requests filtered by student
+		return null;	
+	}
+	
+	public String approveRequest(String id) {
+//		Change status if not approved and return success else return failure
+		return "failure";
+	}
+	
 	public Request getRequestById(int id) {
 		String sqlQuery = "select * from requests where surrogate_id = '" + id + "'";
 		Request r = null;
@@ -122,4 +132,8 @@ public class RequestRepository {
 		return newR;
 	}
 
+	public String closeRequest(int id, String status) {
+//		Change status if open and return success else return failure
+		return "failure";
+	}
 }

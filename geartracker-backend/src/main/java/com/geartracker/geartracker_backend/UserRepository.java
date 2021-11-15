@@ -21,6 +21,11 @@ public class UserRepository {
 		
 	}
 	
+	public User login(String id, String password) {
+//		Return user if id and password exists else return null
+		return null;
+	}
+	
 	public List<User> getUsersList() {
 		List<User> users = new ArrayList<>();
 		String sqlQuery1 = "select * from user";
