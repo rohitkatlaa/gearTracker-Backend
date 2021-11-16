@@ -44,19 +44,30 @@ public class EquipmentRepository {
 		return equipments;
 	}
 
-	public String bookEquipment(String id) {
-//		Change status if not booked and return success else return failure
-		return "failure";
-	}
 	
-	public List<Equipment> getEquipmentsListForStudent(String id) {
-//		Return List of equipments filtered by student
-		return null;
-	}
-	
-	public List<Equipment> getAvailableEquipment() {
-//		Return List of equipments filtered by availability
-		return null;
+	public List<Equipment> getAvailableEquipment() //Return List of equipments filtered by availability
+	{
+		List<Equipment> equipments = new ArrayList<>();
+		String sqlQuery = "select * from equipment where equipment_status = 'available'";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			while(rs.next()) {
+				String equipment_id = rs.getString("equipment_id");
+				String name = rs.getString("equipment_category");
+				String description = rs.getString("equipment_description");
+				String status = rs.getString("equipment_status");
+				boolean reserved = (rs.getInt("sports_team")!=0);
+				Equipment e = new Equipment(equipment_id, name, status, reserved, description);
+				equipments.add(e);
+			}
+			
+		} catch(Exception e) {
+			System.out.println(e);
+			return null;
+		}
+
+		return equipments;
 	}
 	
 	public Equipment getEquipmentById(String id) {
@@ -120,5 +131,18 @@ public class EquipmentRepository {
 			System.out.println(ex);
 		}
 		return newE;
+	}
+
+	public String editEquipmentStatus(String id, String status)  //Change status if open and return success else return failure
+	{
+		String sqlQuery = "UPDATE equipment SET equipment_status= '" + status + "' WHERE equipment_id = '" + id + "'";
+		try {
+			Statement st = conn.createStatement();
+			st.executeQuery(sqlQuery);
+		}catch (Exception ex) {
+			System.out.println(ex);
+			return "failure";
+		}
+		return "success";
 	}
 }

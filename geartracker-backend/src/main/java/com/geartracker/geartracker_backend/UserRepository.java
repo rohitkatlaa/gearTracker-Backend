@@ -21,9 +21,47 @@ public class UserRepository {
 		
 	}
 	
-	public User login(String id, String password) {
-//		Return user if id and password exists else return null
-		return null;
+	public User login(String id, String password) //Return user if id and password exists else return null
+	{
+		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND passwrd = '" + password + "'";
+		User u = new User();
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery1);
+			if(rs.next()) {
+				u.setId(rs.getString("user_id"));
+				u.setName(rs.getString("name"));
+				u.resetPassword(rs.getString("passwrd"));
+				u.setEmail(rs.getString("email"));
+				Integer val = rs.getInt("student");
+				if(rs.wasNull())
+					u.setStudent(0);
+				else
+					u.setStudent(val);
+			}
+			String sqlQuery2 = "select role from user_role where id_user = (select surrogate_id from user where user_id = '"+ id +"')";
+			ResultSet rs2 = st.executeQuery(sqlQuery2);
+			while(rs2.next()) {
+				u.add_roles(rs2.getString("role"));
+			}
+			if(u.getRoles().contains("student"))
+				{
+					Integer val = u.getStudent();
+					String sqlQuery3 = "select fine,sports_team from student where surrogate_id ="+ val;
+					ResultSet rs3 = st.executeQuery(sqlQuery3);
+					rs3.next();
+					u.setFine(rs3.getInt("fine"));
+					int bool = rs3.getInt("sports_team");
+					if(bool==0)
+						u.setSportsStatus(false);
+					else
+						u.setSportsStatus(true);
+				}
+		} catch(Exception exc) {
+			System.out.println(exc);
+			return null;
+		}
+		return u;
 	}
 	
 	public List<User> getUsersList() {
