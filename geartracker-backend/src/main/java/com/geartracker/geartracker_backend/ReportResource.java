@@ -17,7 +17,7 @@ public class ReportResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Object> getEquipments() {
+	public List<Object> getReport() {
 //		Sends a list of static data, only the values are sent and the keys are not sent.
 		return null;
 	}

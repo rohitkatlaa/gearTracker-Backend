@@ -1,5 +1,6 @@
 package com.geartracker.geartracker_backend;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,8 @@ import javax.ws.rs.core.MediaType;
 public class EquipmentResource {
 	
 	EquipmentRepository repo = new EquipmentRepository();
+	UserRepository user_repo = new UserRepository();
+	RequestRepository request_repo = new RequestRepository();
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -25,16 +28,18 @@ public class EquipmentResource {
 	}
 	
 	@GET
-	@Path("/book/{id}")
-	public String bookEquipment(@PathParam("id") String id) { 
-		return repo.bookEquipment(id);
-	}
-	
-	@GET
 	@Path("/student/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipmentsForStudent(@PathParam("id") String id) {
-		return repo.getEquipmentsListForStudent(id);
+		List<Request> requests = request_repo.getRequestsListForStudent(id);
+		List<Equipment> equipments = new ArrayList<>();
+		for(Request r: requests) {
+			if(r.getStatus()==Constants.REQUEST_STATUS_APPROVED) {
+				Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentId()));
+				equipments.add(e);
+			}
+		}
+		return equipments;
 	}
 	
 	
@@ -48,6 +53,24 @@ public class EquipmentResource {
 	@Path("/{id}")
 	public Equipment getEquipment(@PathParam("id") String id) { 
 		return repo.getEquipmentById(id);
+	}
+	
+	@POST
+	@Path("/book/{id}")
+	public String bookEquipment(@PathParam("id") String id, String user_id) { 
+		Equipment e = repo.getEquipmentById(id);
+		if(e.getStatus()==Constants.EQUIPMENT_STATUS_AVAILABLE) {
+			int e_id = repo.getSurrogateId(id);
+			int u_id = user_repo.getSurrogateId(user_id);
+			if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
+				return Constants.FAILURE_STATUS;
+			}
+			Request r = new Request(e_id, u_id, Constants.REQUEST_STATUS_OPEN, LocalDate.now(), (LocalDate)null);
+			e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
+			repo.editEquipment(id, e);
+			request_repo.createRequest(r);
+		}
+		return Constants.SUCCESS_STATUS;
 	}
 	
 	@POST

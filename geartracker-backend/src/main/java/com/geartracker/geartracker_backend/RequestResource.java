@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 public class RequestResource {
 	
 	RequestRepository repo = new RequestRepository();
+	EquipmentRepository equipment_repo = new EquipmentRepository();
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -33,8 +34,14 @@ public class RequestResource {
 	
 	@GET
 	@Path("/approve/{id}")
-	public String approveRequest(@PathParam("id") String id) { 
-		return repo.approveRequest(id);
+	public String approveRequest(@PathParam("id") int id) {
+		Request r = repo.getRequestById(id);
+		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
+		Equipment e = equipment_repo.getEquipmentById(e_id);
+		if(e.getStatus()==Constants.EQUIPMENT_STATUS_AVAILABLE) {
+			return repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
+		}
+		return Constants.FAILURE_STATUS;
 	}
 	
 	@GET
@@ -58,7 +65,14 @@ public class RequestResource {
 	@PUT
 	@Path("/close/{id}")
 	public String closeRequest(@PathParam("id") int id, String status) {
-		return repo.closeRequest(id, status);
+		Request r = repo.getRequestById(id);
+		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
+		Equipment e = equipment_repo.getEquipmentById(e_id);
+		if(e.getStatus()==Constants.EQUIPMENT_STATUS_ISSUED) {
+			equipment_repo.editEquipmentStatus(e_id, status);
+			return repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
+		}
+		return Constants.FAILURE_STATUS;
 	}
 	
 	@DELETE

@@ -21,6 +21,23 @@ public class UserRepository {
 		
 	}
 	
+	public int getSurrogateId(String id) {
+		String sqlQuery = "select surrogate_id from user where user_id = '" + id + "'";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				int surrogate_id = rs.getInt("surrogate_id");
+				return surrogate_id;
+			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.ERROR_STATUS;
+	}
+	
+	
 	public User login(String id, String password) //Return user if id and password exists else return null
 	{
 		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND passwrd = '" + password + "'";

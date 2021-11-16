@@ -51,8 +51,7 @@ public class RequestRepository {
 		return requests;
 	}
 	
-	public List<Request> getRequestsListForStudent(String id)  //Return List of requests filtered by user_id
-	{
+	public List<Request> getRequestsListForStudent(String id) {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests where id_user = (select surrogate_id from user where user_id = '"+ id +"')";
 		try {
@@ -108,20 +107,19 @@ public class RequestRepository {
 	}
 	
 	public void createRequest(Request r) {
-		String sqlQuery = "insert into requests (surrogate_id,id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?,?)";
+		String sqlQuery = "insert into requests (id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?)";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
-			st.setInt(1,r.getRequestId());
-			st.setInt(2,r.getUserId());
-			st.setInt(3, r.getEquipmentId());
-			st.setDate(4, Date.valueOf(r.getIssueDate()));
+			st.setInt(1,r.getUserId());
+			st.setInt(2, r.getEquipmentId());
+			st.setDate(3, Date.valueOf(r.getIssueDate()));
 			if(r.getReturnDate()==null) {
-				st.setNull(5, Types.DATE);
+				st.setNull(4, Types.DATE);
 			}
 			else{
-				st.setDate(5, Date.valueOf(r.getReturnDate()));
+				st.setDate(4, Date.valueOf(r.getReturnDate()));
 			}
-			st.setString(6, r.getStatus());
+			st.setString(5, r.getStatus());
 			st.executeUpdate();
 		} catch(Exception exc) {
 			System.out.println(exc);
@@ -150,16 +148,15 @@ public class RequestRepository {
 		return newR;
 	}
 
-	public String editRequestStatus(int id, String status)  //Change status if open and return success else return failure
-	{
+	public String editRequestStatus(int id, String status) {
 		String sqlQuery = "UPDATE requests SET request_status= '" + status + "' WHERE surrogate_id = " + id;
 		try {
 			Statement st = conn.createStatement();
 			st.executeQuery(sqlQuery);
 		}catch (Exception ex) {
 			System.out.println(ex);
-			return "failure";
+			return Constants.FAILURE_STATUS;
 		}
-		return "success";
+		return Constants.SUCCESS_STATUS;
 	}
 }

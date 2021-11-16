@@ -10,6 +10,15 @@ public class Request {
 	private String status;
 	private LocalDate issueDate;
 	private LocalDate returnDate = null;
+
+//	This constructor is used when request id is not needed(When creating a new request). 
+	public Request(int equipmentId, int userId, String status, LocalDate issueDate, LocalDate returnDate) {
+		this.equipmentId = equipmentId;
+		this.userId = userId;
+		this.status = status;
+		this.issueDate = issueDate;
+		this.returnDate = returnDate;
+	}
 	
 	public Request(int requestId, int equipmentId, int userId, String status, LocalDate issueDate, LocalDate returnDate) {
 		this.requestId = requestId;

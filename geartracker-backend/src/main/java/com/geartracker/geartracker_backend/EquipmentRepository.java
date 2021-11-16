@@ -21,6 +21,38 @@ public class EquipmentRepository {
 		
 	}
 	
+	public String getEquipmentId(int id) {
+		String sqlQuery = "select equipment_id from equipment where surrogate_id = '" + id + "'";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				String e_id = rs.getString("equipment_id");
+				return e_id;
+			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.FAILURE_STATUS;
+	}
+	
+	public int getSurrogateId(String id) {
+		String sqlQuery = "select surrogate_id from equipment where equipment_id = '" + id + "'";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				int surrogate_id = rs.getInt("surrogate_id");
+				return surrogate_id;
+			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.ERROR_STATUS;
+	}
+	
 	public List<Equipment> getEquipmentsList() {
 		List<Equipment> equipments = new ArrayList<>();
 		String sqlQuery = "select * from equipment";
