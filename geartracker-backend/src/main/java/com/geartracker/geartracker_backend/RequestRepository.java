@@ -10,7 +10,6 @@ public class RequestRepository {
 	List<Request> requests = new ArrayList<>();
 	Connection conn = null;
 	
-	
 	public RequestRepository() {
 		String url = Constants.SQL_URL;
 		String username = Constants.SQL_USERNAME;
@@ -52,14 +51,33 @@ public class RequestRepository {
 		return requests;
 	}
 	
-	public List<Request> getRequestsListForStudent(String id) {
-//		Return List of requests filtered by student
-		return null;	
-	}
-	
-	public String approveRequest(String id) {
-//		Change status if not approved and return success else return failure
-		return "failure";
+	public List<Request> getRequestsListForStudent(String id)  //Return List of requests filtered by user_id
+	{
+		List<Request> requests = new ArrayList<>();
+		String sqlQuery = "select * from requests where id_user = (select surrogate_id from user where user_id = '"+ id +"')";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			while(rs.next()) {
+				int request_id = rs.getInt("surrogate_id");
+				int user_id = rs.getInt("id_user");
+				int equipment_id = rs.getInt("id_equipment");
+				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
+				Date rd = rs.getDate("return_date");
+				LocalDate return_date = (LocalDate)null;
+				if(!rs.wasNull())
+				{
+					return_date = rd.toLocalDate();
+				}
+				String status = rs.getString("request_status");
+				Request r = new Request(request_id, equipment_id, user_id, status, issue_date, return_date);
+				requests.add(r);
+			}
+		} catch(Exception e) {
+			System.out.println(e);
+			return null;
+		}
+		return requests;
 	}
 	
 	public Request getRequestById(int id) {
@@ -132,8 +150,16 @@ public class RequestRepository {
 		return newR;
 	}
 
-	public String closeRequest(int id, String status) {
-//		Change status if open and return success else return failure
-		return "failure";
+	public String editRequestStatus(int id, String status)  //Change status if open and return success else return failure
+	{
+		String sqlQuery = "UPDATE requests SET request_status= '" + status + "' WHERE surrogate_id = " + id;
+		try {
+			Statement st = conn.createStatement();
+			st.executeQuery(sqlQuery);
+		}catch (Exception ex) {
+			System.out.println(ex);
+			return "failure";
+		}
+		return "success";
 	}
 }
