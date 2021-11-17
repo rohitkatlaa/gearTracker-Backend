@@ -1,5 +1,6 @@
 package com.geartracker.geartracker_backend;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,6 +90,7 @@ public class RequestResource {
 		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
 			equipment_repo.editEquipmentStatus(e_id, s.getStatus());
 			repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
+			repo.setRequestReturnDate(id, LocalDate.now());
 			return Constants.SUCCESS_STATUS;
 		}
 		return Constants.FAILURE_STATUS;

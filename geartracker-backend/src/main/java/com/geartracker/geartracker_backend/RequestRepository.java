@@ -159,4 +159,17 @@ public class RequestRepository {
 		}
 		return Constants.SUCCESS_STATUS;
 	}
+	
+	public String setRequestReturnDate(int id, LocalDate return_date) {
+		String sqlQuery = "UPDATE requests SET return_date= ? WHERE surrogate_id = " + id;
+		try {
+			PreparedStatement st = conn.prepareStatement(sqlQuery);
+			st.setDate(1, Date.valueOf(return_date));
+			st.executeUpdate();			
+		}catch (Exception ex) {
+			System.out.println(ex);
+			return Constants.FAILURE_STATUS;
+		}
+		return Constants.SUCCESS_STATUS;
+	}
 }
