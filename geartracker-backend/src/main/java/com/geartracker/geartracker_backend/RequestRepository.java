@@ -152,7 +152,7 @@ public class RequestRepository {
 		String sqlQuery = "UPDATE requests SET request_status= '" + status + "' WHERE surrogate_id = " + id;
 		try {
 			Statement st = conn.createStatement();
-			st.executeQuery(sqlQuery);
+			st.executeUpdate(sqlQuery);
 		}catch (Exception ex) {
 			System.out.println(ex);
 			return Constants.FAILURE_STATUS;

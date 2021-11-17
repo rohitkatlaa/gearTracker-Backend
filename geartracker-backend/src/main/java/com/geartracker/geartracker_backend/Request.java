@@ -10,6 +10,11 @@ public class Request {
 	private String status;
 	private LocalDate issueDate;
 	private LocalDate returnDate = null;
+	
+//	Default constructor is needed for jersey POST request.
+	public Request() {
+		
+	}
 
 //	This constructor is used when request id is not needed(When creating a new request). 
 	public Request(int equipmentId, int userId, String status, LocalDate issueDate, LocalDate returnDate) {

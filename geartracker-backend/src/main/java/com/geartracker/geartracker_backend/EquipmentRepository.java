@@ -170,7 +170,7 @@ public class EquipmentRepository {
 		String sqlQuery = "UPDATE equipment SET equipment_status= '" + status + "' WHERE equipment_id = '" + id + "'";
 		try {
 			Statement st = conn.createStatement();
-			st.executeQuery(sqlQuery);
+			st.executeUpdate(sqlQuery);
 		}catch (Exception ex) {
 			System.out.println(ex);
 			return "failure";

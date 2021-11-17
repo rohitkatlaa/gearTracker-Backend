@@ -13,11 +13,26 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.google.gson.Gson;
+
+class Status {
+	private String status;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+}
+
 @Path("requests")
 public class RequestResource {
 	
 	RequestRepository repo = new RequestRepository();
 	EquipmentRepository equipment_repo = new EquipmentRepository();
+	Gson gson = new Gson(); 
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -30,18 +45,6 @@ public class RequestResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequestsForStudent(@PathParam("id") String id) {
 		return repo.getRequestsListForStudent(id);
-	}
-	
-	@GET
-	@Path("/approve/{id}")
-	public String approveRequest(@PathParam("id") int id) {
-		Request r = repo.getRequestById(id);
-		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
-		Equipment e = equipment_repo.getEquipmentById(e_id);
-		if(e.getStatus()==Constants.EQUIPMENT_STATUS_AVAILABLE) {
-			return repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
-		}
-		return Constants.FAILURE_STATUS;
 	}
 	
 	@GET
@@ -63,14 +66,30 @@ public class RequestResource {
 	}
 	
 	@PUT
-	@Path("/close/{id}")
-	public String closeRequest(@PathParam("id") int id, String status) {
+	@Path("/approve/{id}")
+	public String approveRequest(@PathParam("id") int id) {
 		Request r = repo.getRequestById(id);
 		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
 		Equipment e = equipment_repo.getEquipmentById(e_id);
-		if(e.getStatus()==Constants.EQUIPMENT_STATUS_ISSUED) {
-			equipment_repo.editEquipmentStatus(e_id, status);
-			return repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
+		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
+			equipment_repo.editEquipmentStatus(e_id, Constants.EQUIPMENT_STATUS_ISSUED);
+			repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
+			return Constants.SUCCESS_STATUS;
+		}
+		return Constants.FAILURE_STATUS;
+	}
+	
+	@PUT
+	@Path("/close/{id}")
+	public String closeRequest(@PathParam("id") int id, String body) {
+		Status s = gson.fromJson(body, Status.class);
+		Request r = repo.getRequestById(id);
+		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
+		Equipment e = equipment_repo.getEquipmentById(e_id);
+		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
+			equipment_repo.editEquipmentStatus(e_id, s.getStatus());
+			repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
+			return Constants.SUCCESS_STATUS;
 		}
 		return Constants.FAILURE_STATUS;
 	}

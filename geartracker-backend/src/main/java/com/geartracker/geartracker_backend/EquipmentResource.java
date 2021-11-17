@@ -14,12 +14,27 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.google.gson.Gson;
+
+class UserId {
+	private String user_id;
+	
+	public String getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
+	}
+}
+
 @Path("equipments")
 public class EquipmentResource {
 	
 	EquipmentRepository repo = new EquipmentRepository();
 	UserRepository user_repo = new UserRepository();
 	RequestRepository request_repo = new RequestRepository();
+	Gson gson = new Gson(); 
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +49,7 @@ public class EquipmentResource {
 		List<Request> requests = request_repo.getRequestsListForStudent(id);
 		List<Equipment> equipments = new ArrayList<>();
 		for(Request r: requests) {
-			if(r.getStatus()==Constants.REQUEST_STATUS_APPROVED) {
+			if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
 				Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentId()));
 				equipments.add(e);
 			}
@@ -57,11 +72,12 @@ public class EquipmentResource {
 	
 	@POST
 	@Path("/book/{id}")
-	public String bookEquipment(@PathParam("id") String id, String user_id) { 
+	public String bookEquipment(@PathParam("id") String id, String body) {
+		UserId user_id = gson.fromJson(body, UserId.class);
 		Equipment e = repo.getEquipmentById(id);
-		if(e.getStatus()==Constants.EQUIPMENT_STATUS_AVAILABLE) {
+		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
 			int e_id = repo.getSurrogateId(id);
-			int u_id = user_repo.getSurrogateId(user_id);
+			int u_id = user_repo.getSurrogateId(user_id.getUser_id());
 			if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
 				return Constants.FAILURE_STATUS;
 			}
@@ -69,8 +85,9 @@ public class EquipmentResource {
 			e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
 			repo.editEquipment(id, e);
 			request_repo.createRequest(r);
+			return Constants.SUCCESS_STATUS;
 		}
-		return Constants.SUCCESS_STATUS;
+		return Constants.FAILURE_STATUS;
 	}
 	
 	@POST

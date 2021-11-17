@@ -10,6 +10,12 @@ public class Equipment {
 	private boolean reserved;
 	private String description;
 	
+
+//	Default constructor is needed for jersey POST request.
+	public Equipment() {
+		
+	}
+	
 	public Equipment(String id, String name, String status, boolean reserved, String description) {
 		this.id = id;
 		this.name = name;
