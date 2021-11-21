@@ -74,8 +74,10 @@ public class FineCalculation{
 				usr.addFine(100);
 				usr_repo.editUser(usr_id, usr);
 				SendMail.sendmail(usr.getEmail(), "geartrackertesting486@gmail.com", "geartrackertesting684", "Fine for damaging equipment", "Your act of making our equipment unusable is unforgivable. Don't repeat this. Your current fine is " + Integer.toString(usr.getFine()) + ".");
-			
+				
 				//Make change in database now. Use the req ID of this request, search in database and close request.
+				req.setStatus("Closed");
+				req_repo.editRequest(req.getId(), req);
 			}
 			//return usr_repo;
 			//else{
