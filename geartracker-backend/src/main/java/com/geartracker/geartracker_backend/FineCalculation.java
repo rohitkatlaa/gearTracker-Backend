@@ -8,7 +8,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 //import java.util.concurrent.Executors;
 //import java.util.concurrent.ScheduledExecutorService;
@@ -17,7 +22,16 @@ import java.util.ArrayList;
 import com.sendemail.SendMail;
 
 public class FineCalculation{
-
+	private EquipmentRepository eq_repo;
+	private RequestRepository req_repo;
+	private UserRepository usr_repo;
+	
+	public FineCalculation(EquipmentRepository eq_repo, RequestRepository req_repo, UserRepository usr_repo){
+		this.eq_repo = eq_repo;
+		this.req_repo = req_repo;
+		this.usr_repo = usr_repo;
+	}
+	
 	public long daysOpen(Request req){
 		if(req.getStatus().equalsIgnoreCase("Issued")){
 			return DAYS.between(req.getIssueDate(), LocalDate.now());
@@ -30,7 +44,7 @@ public class FineCalculation{
 		}
 	}
 
-	public UserRepository computeFine(EquipmentRepository eq_repo, UserRepository usr_repo, Request req){
+	public void computeFine(Request req){
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
 		if(req.getStatus().equalsIgnoreCase("Issued")) {
@@ -63,7 +77,7 @@ public class FineCalculation{
 			
 				//Make change in database now. Use the req ID of this request, search in database and close request.
 			}
-			return usr_repo;
+			//return usr_repo;
 			//else{
 			//	return null;
 			//}
@@ -73,7 +87,9 @@ public class FineCalculation{
 	}
 	
 	public void scanRequest() {
-		;
+		for(Request req:req_repo.getRequestsList()) {
+			computeFine(req);
+		}
 	}
 	/*public void scanRequest(UserRepository usr_repo, RequestRepository req_repo) {
 		for(int i=0; i< req_repo.getRequestsList().size(); i++) {
@@ -81,7 +97,7 @@ public class FineCalculation{
 		}
 	}*/
 	
-	public void scanRequest(RequestRepository req_repo){
+	public void scheduleScan(){
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		//Call function on each request from the request table.
 		Runnable scanner = () -> scanRequest();
@@ -89,10 +105,24 @@ public class FineCalculation{
 		Runnable canceller = () -> scanHandle.cancel(false);
 		scheduler.schedule(canceller, 1, TimeUnit.HOURS);
 	}
+	
 	public static void main(String[] args){
-		//Request req = new Request(0, 1,2, "Issued", LocalDate.now().minusDays(10), LocalDate.now());
-		//FineCalculation fineobj = new FineCalculation();
-		//fineobj.computeFine(req);
+		User usr = new User();
+		usr.setId("2");
+		usr.setEmail("hemanthx9@gmail.com");
+		Equipment eq = new Equipment("1","Badminton", "Issued", false, "Sturdy");
+		Request req = new Request(0, 1,2, "Issued", LocalDate.now().minusDays(10),null);
+		
+		UserRepository usr_repo = new UserRepository();
+		usr_repo.createUser(usr);
+		
+		EquipmentRepository eq_repo = new EquipmentRepository();
+		eq_repo.createEquipment(eq);
+		
+		RequestRepository req_repo = new RequestRepository();
+		req_repo.createRequest(req);
+		
+		FineCalculation fineobj = new FineCalculation(eq_repo, req_repo, usr_repo);
+		fineobj.scheduleScan();
 	}
-
 }
