@@ -37,6 +37,22 @@ public class UserRepository {
 		return Constants.ERROR_STATUS;
 	}
 	
+	public String getUserId(int id) {
+		String sqlQuery = "select user_id from user where surrogate_id = '" + id + "'";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				String e_id = rs.getString("user_id");
+				return e_id;
+			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.FAILURE_STATUS;
+	}
+	
 	
 	public User login(String id, String password) //Return user if id and password exists else return null
 	{
