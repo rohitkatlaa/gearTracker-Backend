@@ -58,9 +58,13 @@ public class FineCalculation{
 			//UserRepository usr_repo = new UserRepository();
 			String usr_id = usr_repo.getUserId(req.getUserId());
 			User usr = usr_repo.getUserById(usr_id);
+			
+//			System.out.println()
 		
 			if(status.equalsIgnoreCase("Issued")){
+				System.out.println(daysOpen(req));
 				if(daysOpen(req) >= 6) {
+					
 					SendMail.sendmail(usr.getEmail(), "geartrackertesting486@gmail.com", "geartrackertesting684", "Reminder to return equipment", "Please return equipment possessed by you. Your current fine is " + Integer.toString(usr.getFine()) + ".");
 				}
 			
@@ -77,7 +81,7 @@ public class FineCalculation{
 				
 				//Make change in database now. Use the req ID of this request, search in database and close request.
 				req.setStatus("Closed");
-				req_repo.editRequest(req.getId(), req);
+				req_repo.editRequest(req.getRequestId(), req);
 			}
 			//return usr_repo;
 			//else{
@@ -90,6 +94,7 @@ public class FineCalculation{
 	
 	public void scanRequest() {
 		for(Request req:req_repo.getRequestsList()) {
+			System.out.println("Here");
 			computeFine(req);
 		}
 	}
@@ -102,27 +107,28 @@ public class FineCalculation{
 	public void scheduleScan(){
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		//Call function on each request from the request table.
+		System.out.println("Scheduled scan");
 		Runnable scanner = () -> scanRequest();
-		ScheduledFuture<?> scanHandle = scheduler.scheduleAtFixedRate(scanner, 1, 90, TimeUnit.SECONDS);
+		ScheduledFuture<?> scanHandle = scheduler.scheduleAtFixedRate(scanner, 1, 5, TimeUnit.SECONDS);
 		Runnable canceller = () -> scanHandle.cancel(false);
 		scheduler.schedule(canceller, 1, TimeUnit.HOURS);
 	}
 	
 	public static void main(String[] args){
-		User usr = new User();
-		usr.setId("2");
-		usr.setEmail("hemanthx9@gmail.com");
-		Equipment eq = new Equipment("1","Badminton", "Issued", false, "Sturdy");
-		Request req = new Request(0, 1,2, "Issued", LocalDate.now().minusDays(10),null);
+//		User usr = new User();
+//		usr.setId("65");
+//		usr.setEmail("Hemanth.Chitti@iiitb.ac.in");
+//		Equipment eq = new Equipment("ETest1","Badminton", "Issued", false, "Sturdy");
+//		Request req = new Request(0, 1,2, "Issued", LocalDate.now().minusDays(10),null);
 		
 		UserRepository usr_repo = new UserRepository();
-		usr_repo.createUser(usr);
+		usr_repo.getUserById("test");
 		
 		EquipmentRepository eq_repo = new EquipmentRepository();
-		eq_repo.createEquipment(eq);
+		eq_repo.getEquipmentById("F1");
 		
 		RequestRepository req_repo = new RequestRepository();
-		req_repo.createRequest(req);
+		req_repo.getRequestById(1);
 		
 		FineCalculation fineobj = new FineCalculation(eq_repo, req_repo, usr_repo);
 		fineobj.scheduleScan();
