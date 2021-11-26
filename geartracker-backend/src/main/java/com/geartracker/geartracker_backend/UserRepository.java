@@ -61,6 +61,9 @@ public class UserRepository {
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sqlQuery1);
+			if (!rs.isBeforeFirst()) {
+				return null;
+			}
 			if(rs.next()) {
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));

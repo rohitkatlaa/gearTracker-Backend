@@ -70,7 +70,7 @@ public class RequestResource {
 	@Path("/approve/{id}")
 	public String approveRequest(@PathParam("id") int id) {
 		Request r = repo.getRequestById(id);
-		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
+		String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
 		Equipment e = equipment_repo.getEquipmentById(e_id);
 		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
 			equipment_repo.editEquipmentStatus(e_id, Constants.EQUIPMENT_STATUS_ISSUED);
@@ -85,9 +85,9 @@ public class RequestResource {
 	public String closeRequest(@PathParam("id") int id, String body) {
 		Status s = gson.fromJson(body, Status.class);
 		Request r = repo.getRequestById(id);
-		String e_id = equipment_repo.getEquipmentId(r.getEquipmentId());
+		String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
 		Equipment e = equipment_repo.getEquipmentById(e_id);
-		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
+		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_ISSUED)) {
 			equipment_repo.editEquipmentStatus(e_id, s.getStatus());
 			repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
 			repo.setRequestReturnDate(id, LocalDate.now());

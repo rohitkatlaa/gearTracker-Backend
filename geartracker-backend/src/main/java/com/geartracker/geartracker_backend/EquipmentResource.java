@@ -50,7 +50,7 @@ public class EquipmentResource {
 		List<Equipment> equipments = new ArrayList<>();
 		for(Request r: requests) {
 			if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
-				Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentId()));
+				Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentSurrId()));
 				equipments.add(e);
 			}
 		}
@@ -81,7 +81,7 @@ public class EquipmentResource {
 			if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
 				return Constants.FAILURE_STATUS;
 			}
-			Request r = new Request(e_id, u_id, Constants.REQUEST_STATUS_OPEN, LocalDate.now(), (LocalDate)null);
+			Request r = new Request(id, e_id, user_id.getUser_id(), u_id, Constants.REQUEST_STATUS_OPEN, LocalDate.now(), (LocalDate)null);
 			e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
 			repo.editEquipment(id, e);
 			request_repo.createRequest(r);
@@ -104,8 +104,8 @@ public class EquipmentResource {
 	
 	@DELETE
 	@Path("/{id}")
-	public Equipment deleteEquipment(@PathParam("id") String id) { 
-		System.out.println(id);
-		return null;
+	public String deleteEquipment(@PathParam("id") String id) { 
+		repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
+		return Constants.SUCCESS_STATUS;
 	}
 }

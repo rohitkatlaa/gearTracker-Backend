@@ -48,7 +48,7 @@ public class FineCalculation{
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
 		if(req.getStatus().equalsIgnoreCase("Issued")) {
-			String eq_id = eq_repo.getEquipmentId(req.getEquipmentId()); //Using surrogate ID in request, get equipment ID.
+			String eq_id = eq_repo.getEquipmentId(req.getEquipmentSurrId()); //Using surrogate ID in request, get equipment ID.
 			Equipment eq = eq_repo.getEquipmentById(eq_id); //Retrieve equipment.
 			String status = eq.getStatus();
 
@@ -56,7 +56,7 @@ public class FineCalculation{
 			//Standard rate is 5 rupees per day overdue. If the equipment is damaged, then instead add 100 rupees.
 
 			//UserRepository usr_repo = new UserRepository();
-			String usr_id = usr_repo.getUserId(req.getUserId());
+			String usr_id = usr_repo.getUserId(req.getUserSurrId());
 			User usr = usr_repo.getUserById(usr_id);
 			
 //			System.out.println()

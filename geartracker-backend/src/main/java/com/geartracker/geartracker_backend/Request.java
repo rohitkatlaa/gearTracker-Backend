@@ -5,8 +5,10 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Request {
 	private int requestId;
-	private int equipmentId;
-	private int userId;
+	private String equipmentId;
+	private int equipmentSurrId;
+	private String userId;
+	private int userSurrId;
 	private String status;
 	private LocalDate issueDate;
 	private LocalDate returnDate = null;
@@ -17,7 +19,9 @@ public class Request {
 	}
 
 //	This constructor is used when request id is not needed(When creating a new request). 
-	public Request(int equipmentId, int userId, String status, LocalDate issueDate, LocalDate returnDate) {
+	public Request(String equipmentId, int equipmentSurrId, String userId, int userSurrId, String status, LocalDate issueDate, LocalDate returnDate) {
+		this.equipmentSurrId = equipmentSurrId;
+		this.userSurrId = userSurrId;
 		this.equipmentId = equipmentId;
 		this.userId = userId;
 		this.status = status;
@@ -25,8 +29,10 @@ public class Request {
 		this.returnDate = returnDate;
 	}
 	
-	public Request(int requestId, int equipmentId, int userId, String status, LocalDate issueDate, LocalDate returnDate) {
+	public Request(int requestId, String equipmentId, int equipmentSurrId, String userId, int userSurrId, String status, LocalDate issueDate, LocalDate returnDate) {
 		this.requestId = requestId;
+		this.equipmentSurrId = equipmentSurrId;
+		this.userSurrId = userSurrId;
 		this.equipmentId = equipmentId;
 		this.userId = userId;
 		this.status = status;
@@ -43,19 +49,35 @@ public class Request {
 		this.requestId = requestId;
 	}
 
-	public int getEquipmentId() {
+	public int getEquipmentSurrId() {
+		return equipmentSurrId;
+	}
+
+	public void setEquipmentSurrId(int equipmentSurrId) {
+		this.equipmentSurrId = equipmentSurrId;
+	}
+
+	public int getUserSurrId() {
+		return userSurrId;
+	}
+
+	public void setUserSurrId(int userSurrId) {
+		this.userSurrId = userSurrId;
+	}
+	
+	public String getEquipmentId() {
 		return equipmentId;
 	}
 
-	public void setEquipmentId(int equipmentId) {
+	public void setEquipmentId(String equipmentId) {
 		this.equipmentId = equipmentId;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
