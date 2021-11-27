@@ -3,6 +3,7 @@ package com.geartracker.geartracker_backend;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -31,6 +32,7 @@ class UserId {
 @Path("equipments")
 public class EquipmentResource {
 	
+	public static HashMap<String, Integer> stats_discarded = new HashMap<>();
 	EquipmentRepository repo = new EquipmentRepository();
 	UserRepository user_repo = new UserRepository();
 	RequestRepository request_repo = new RequestRepository();
@@ -105,6 +107,16 @@ public class EquipmentResource {
 	@DELETE
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) { 
+		Equipment e = repo.getEquipmentById(id);
+		String key = e.getName();
+		if (stats_discarded.containsKey(key))
+		{
+			stats_discarded.put(key, stats_discarded.get(key)+1);
+		}
+		else
+		{
+			stats_discarded.put(key,1);
+		}
 		repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
 		return Constants.SUCCESS_STATUS;
 	}
