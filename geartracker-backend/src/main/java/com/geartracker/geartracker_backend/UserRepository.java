@@ -71,7 +71,7 @@ public class UserRepository {
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
-					u.setStudent(0);
+					u.setStudent(Constants.STUDENT_DUMMY);
 				else
 					u.setStudent(val);
 			}
@@ -114,7 +114,7 @@ public class UserRepository {
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
-					u.setStudent(0);
+					u.setStudent(Constants.STUDENT_DUMMY);
 				else
 					u.setStudent(val);	
 				users.add(u);
@@ -161,7 +161,7 @@ public class UserRepository {
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
-					u.setStudent(0);
+					u.setStudent(Constants.STUDENT_DUMMY);
 				else
 					u.setStudent(val);
 			}
@@ -221,7 +221,7 @@ public class UserRepository {
 			}
 			else
 			{
-				st.setNull(5, Types.INTEGER);
+				st.setInt(5, Constants.STUDENT_DUMMY);
 				st.executeUpdate();
 			}
 			int n = u.getRoles().size();

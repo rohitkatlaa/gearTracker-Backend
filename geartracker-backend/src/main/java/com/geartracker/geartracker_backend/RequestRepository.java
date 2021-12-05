@@ -2,6 +2,7 @@ package com.geartracker.geartracker_backend;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -9,6 +10,7 @@ public class RequestRepository {
 
 	List<Request> requests = new ArrayList<>();
 	Connection conn = null;
+	public static HashMap<String, Integer> stats_issue = new HashMap<>();
 	
 	EquipmentRepository equipment_repo = new EquipmentRepository();
 	UserRepository user_repo = new UserRepository();
@@ -38,7 +40,8 @@ public class RequestRepository {
 				int equipment_surr_id = rs.getInt("id_equipment");
 				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date rd = rs.getDate("return_date");
-				LocalDate return_date = (LocalDate)null;
+//				LocalDate return_date = (LocalDate)null;
+				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -68,7 +71,8 @@ public class RequestRepository {
 				int equipment_surr_id = rs.getInt("id_equipment");
 				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date rd = rs.getDate("return_date");
-				LocalDate return_date = (LocalDate)null;
+//				LocalDate return_date = (LocalDate)null;
+				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -98,7 +102,8 @@ public class RequestRepository {
 				int equipment_surr_id = rs.getInt("id_equipment");
 				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date rd = rs.getDate("return_date");
-				LocalDate return_date = (LocalDate)null;
+//				LocalDate return_date = (LocalDate)null;
+				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -130,6 +135,19 @@ public class RequestRepository {
 			}
 			st.setString(5, r.getStatus());
 			st.executeUpdate();
+//			EquipmentRepository repo = new EquipmentRepository();
+//			String e_id = repo.getEquipmentId(r.getEquipmentSurrId());
+//			Equipment e = repo.getEquipmentById(e_id);
+//			String key = e.getName();
+//			if (stats_issue.containsKey(key))
+//			{
+//				stats_issue.put(key, stats_issue.get(key)+1);
+//			}
+//			else
+//			{
+//				stats_issue.put(key,1);
+//			}
+			
 		} catch(Exception exc) {
 			System.out.println(exc);
 		}
