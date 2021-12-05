@@ -15,9 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-//import java.util.concurrent.Executors;
-//import java.util.concurrent.ScheduledExecutorService;
-//import java.util.concurrent.TimeUnit;
 
 import com.sendemail.SendMail;
 
@@ -99,12 +96,7 @@ public class FineCalculation{
 	}
 	
 	public static void main(String[] args){
-//		User usr = new User();
-//		usr.setId("65");
-//		usr.setEmail("Hemanth.Chitti@iiitb.ac.in");
-//		Equipment eq = new Equipment("ETest1","Badminton", "Issued", false, "Sturdy");
-//		Request req = new Request(0, 1,2, "Issued", LocalDate.now().minusDays(10),null);
-		
+
 		UserRepository usr_repo = new UserRepository();
 		usr_repo.getUserById("test");
 		
