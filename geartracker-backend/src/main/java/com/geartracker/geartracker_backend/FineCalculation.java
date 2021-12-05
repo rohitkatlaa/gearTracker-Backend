@@ -33,10 +33,10 @@ public class FineCalculation{
 	}
 	
 	public long daysOpen(Request req){
-		if(req.getStatus().equalsIgnoreCase("Issued")){
+		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)){
 			return DAYS.between(req.getIssueDate(), LocalDate.now());
 		}
-		else if(req.getStatus().equalsIgnoreCase("Closed")){
+		else if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_CLOSED)){
 			return DAYS.between(req.getIssueDate(), req.getReturnDate());
 		}
 		else{
@@ -47,7 +47,7 @@ public class FineCalculation{
 	public void computeFine(Request req){
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
-		if(req.getStatus().equalsIgnoreCase("Issued")) {
+		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
 			String eq_id = eq_repo.getEquipmentId(req.getEquipmentSurrId()); //Using surrogate ID in request, get equipment ID.
 			Equipment eq = eq_repo.getEquipmentById(eq_id); //Retrieve equipment.
 			String status = eq.getStatus();
@@ -55,63 +55,47 @@ public class FineCalculation{
 			//Retrieving user from database.
 			//Standard rate is 5 rupees per day overdue. If the equipment is damaged, then instead add 100 rupees.
 
-			//UserRepository usr_repo = new UserRepository();
 			String usr_id = usr_repo.getUserId(req.getUserSurrId());
 			User usr = usr_repo.getUserById(usr_id);
-			
-//			System.out.println()
 		
-			if(status.equalsIgnoreCase("Issued")){
+			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)){
 				System.out.println(daysOpen(req));
-				if(daysOpen(req) >= 6) {
+				if(daysOpen(req) >= Constants.FINE_CUTOFF_DAYS-1) {
 					
-					SendMail.sendmail(usr.getEmail(), "geartrackertesting486@gmail.com", "geartrackertesting684", "Reminder to return equipment", "Please return equipment possessed by you. Your current fine is " + Integer.toString(usr.getFine()) + ".");
+					SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_LATE_SUBJECT, Constants.MAIL_LATE_BODY + Integer.toString(usr.getFine()) + ".");
 				}
 			
-				if(daysOpen(req) > 7){
-					usr.addFine(5);
+				if(daysOpen(req) > Constants.FINE_CUTOFF_DAYS){
+					usr.addFine(Constants.FINE_LATE);
 					usr_repo.editUser(usr_id, usr);
 				}
 			}
 
-			else if(status.equalsIgnoreCase("Defective")){			//To represent when equipment is lost or broken.
-				usr.addFine(100);
+			else if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)){			//To represent when equipment is lost or broken.
+				usr.addFine(Constants.FINE_DEFECTIVE);
 				usr_repo.editUser(usr_id, usr);
-				SendMail.sendmail(usr.getEmail(), "geartrackertesting486@gmail.com", "geartrackertesting684", "Fine for damaging equipment", "Your act of making our equipment unusable is unforgivable. Don't repeat this. Your current fine is " + Integer.toString(usr.getFine()) + ".");
+				SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_DAMAGE_SUBJECT, Constants.MAIL_DAMAGE_BODY + Integer.toString(usr.getFine()) + ".");
 				
 				//Make change in database now. Use the req ID of this request, search in database and close request.
-				req.setStatus("Closed");
+				req.setStatus(Constants.REQUEST_STATUS_CLOSED);
 				req_repo.editRequest(req.getRequestId(), req);
 			}
-			//return usr_repo;
-			//else{
-			//	return null;
-			//}
-			//System.out.println(usr.getFine());		
-			//return usr;
 		}
 	}
 	
 	public void scanRequest() {
 		for(Request req:req_repo.getRequestsList()) {
-			System.out.println("Here");
 			computeFine(req);
 		}
 	}
-	/*public void scanRequest(UserRepository usr_repo, RequestRepository req_repo) {
-		for(int i=0; i< req_repo.getRequestsList().size(); i++) {
-			usr_repo = computeFine(usr_repo, req_repo);
-		}
-	}*/
 	
 	public void scheduleScan(){
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		//Call function on each request from the request table.
-		System.out.println("Scheduled scan");
 		Runnable scanner = () -> scanRequest();
-		ScheduledFuture<?> scanHandle = scheduler.scheduleAtFixedRate(scanner, 1, 5, TimeUnit.SECONDS);
+		ScheduledFuture<?> scanHandle = scheduler.scheduleAtFixedRate(scanner, Constants.SCAN_INITIAL_DELAY, Constants.SCAN_PERIOD, Constants.SCAN_TIMEUNIT);
 		Runnable canceller = () -> scanHandle.cancel(false);
-		scheduler.schedule(canceller, 1, TimeUnit.HOURS);
+		scheduler.schedule(canceller, Constants.SCAN_DURATION, Constants.SCAN_DURATIONUNIT);
 	}
 	
 	public static void main(String[] args){
