@@ -44,7 +44,7 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getRequestCount() {
 		//Report for number of requests per equipment category(name)
-		System.out.println("I was here * 2");
+//		System.out.println("I was here * 2");
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		List<Request> requests = request_repo.getRequestsList();
 		for(Request r: requests) {
