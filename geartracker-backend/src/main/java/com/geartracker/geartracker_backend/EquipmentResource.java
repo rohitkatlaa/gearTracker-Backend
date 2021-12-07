@@ -3,7 +3,6 @@ package com.geartracker.geartracker_backend;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -13,7 +12,11 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 
 import com.google.gson.Gson;
 
@@ -32,15 +35,34 @@ class UserId {
 @Path("equipments")
 public class EquipmentResource {
 	
-//	public static HashMap<String, Integer> stats_discarded = new HashMap<>();
 	EquipmentRepository repo = new EquipmentRepository();
 	UserRepository user_repo = new UserRepository();
 	RequestRepository request_repo = new RequestRepository();
 	Gson gson = new Gson(); 
 	
+	@Context
+	private HttpHeaders httpHeaders;
+	
+	private void authenticate(ArrayList<String> roles) {
+		String token = httpHeaders.getHeaderString("auth-token");
+		LoginData ld = loginResource.getLoginCred(token);
+		if(ld != null) {
+			User u = user_repo.login(ld.getId(), ld.getPassword());
+			if(u != null) {
+				for(String role: u.getRoles()) {
+					if(roles.contains(role)) {
+						return;
+					}
+				}
+			}
+		}
+		throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+	}
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipments() {
+		authenticate(Constants.ALL_ROLES);
 		return repo.getEquipmentsList();
 	}
 	
@@ -48,6 +70,7 @@ public class EquipmentResource {
 	@Path("/student/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipmentsForStudent(@PathParam("id") String id) {
+		authenticate(Constants.ALL_ROLES);
 		List<Request> requests = request_repo.getRequestsListForStudent(id);
 		List<Equipment> equipments = new ArrayList<>();
 		for(Request r: requests) {
@@ -62,19 +85,22 @@ public class EquipmentResource {
 	
 	@GET
 	@Path("/available")
-	public List<Equipment> getAvailableEquipment() { 
+	public List<Equipment> getAvailableEquipment() {
+		authenticate(Constants.ALL_ROLES); 
 		return repo.getAvailableEquipment();
 	}
 	
 	@GET
 	@Path("/{id}")
-	public Equipment getEquipment(@PathParam("id") String id) { 
+	public Equipment getEquipment(@PathParam("id") String id) {
+		authenticate(Constants.ALL_ROLES); 
 		return repo.getEquipmentById(id);
 	}
 	
 	@POST
 	@Path("/book/{id}")
 	public String bookEquipment(@PathParam("id") String id, String body) {
+		authenticate(Constants.ALL_ROLES);
 		UserId user_id = gson.fromJson(body, UserId.class);
 		Equipment e = repo.getEquipmentById(id);
 		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
@@ -94,6 +120,7 @@ public class EquipmentResource {
 	
 	@POST
 	public Equipment createEquipment(Equipment e) {
+		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		repo.createEquipment(e);
 		return e;
 	}
@@ -101,22 +128,14 @@ public class EquipmentResource {
 	@PUT
 	@Path("/{id}")
 	public Equipment editEquipment(@PathParam("id") String id, Equipment e) {
+		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		return repo.editEquipment(id, e);
 	}
 	
 	@DELETE
 	@Path("/{id}")
-	public String deleteEquipment(@PathParam("id") String id) { 
-//		Equipment e = repo.getEquipmentById(id);
-//		String key = e.getName();
-//		if (stats_discarded.containsKey(key))
-//		{
-//			stats_discarded.put(key, stats_discarded.get(key)+1);
-//		}
-//		else
-//		{
-//			stats_discarded.put(key,1);
-//		}
+	public String deleteEquipment(@PathParam("id") String id) {
+		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
 		return Constants.SUCCESS_STATUS;
 	}

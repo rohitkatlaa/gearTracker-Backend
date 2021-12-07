@@ -12,7 +12,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
 
@@ -33,11 +37,32 @@ public class RequestResource {
 	
 	RequestRepository repo = new RequestRepository();
 	EquipmentRepository equipment_repo = new EquipmentRepository();
-	Gson gson = new Gson(); 
+	UserRepository user_repo = new UserRepository();
+	Gson gson = new Gson();
+	
+	@Context
+	private HttpHeaders httpHeaders;
+	
+	private void authenticate(ArrayList<String> roles) {
+		String token = httpHeaders.getHeaderString("auth-token");
+		LoginData ld = loginResource.getLoginCred(token);
+		if(ld != null) {
+			User u = user_repo.login(ld.getId(), ld.getPassword());
+			if(u != null) {
+				for(String role: u.getRoles()) {
+					if(roles.contains(role)) {
+						return;
+					}
+				}
+			}
+		}
+		throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequests() {
+		authenticate(Constants.SUPER_USER_ROLES);
 		return repo.getRequestsList();
 	}
 	
@@ -45,17 +70,20 @@ public class RequestResource {
 	@Path("/student/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequestsForStudent(@PathParam("id") String id) {
+		authenticate(Constants.ALL_ROLES);
 		return repo.getRequestsListForStudent(id);
 	}
 	
 	@GET
 	@Path("/{id}")
-	public Request getRequestById(@PathParam("id") int id) { 
+	public Request getRequestById(@PathParam("id") int id) {
+		authenticate(Constants.ALL_ROLES);
 		return repo.getRequestById(id);
 	}
 	
 	@POST
 	public Request createRequest(Request r) {
+		authenticate(Constants.ALL_ROLES);
 		repo.createRequest(r);
 		return r;
 	}
@@ -63,12 +91,14 @@ public class RequestResource {
 	@PUT
 	@Path("/{id}")
 	public Request editRequest(@PathParam("id") int id, Request r) {
+		authenticate(Constants.ALL_ROLES);
 		return repo.editRequest(id, r);
 	}
 	
 	@PUT
 	@Path("/approve/{id}")
 	public String approveRequest(@PathParam("id") int id) {
+		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		Request r = repo.getRequestById(id);
 		String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
 		Equipment e = equipment_repo.getEquipmentById(e_id);
@@ -83,6 +113,7 @@ public class RequestResource {
 	@PUT
 	@Path("/close/{id}")
 	public String closeRequest(@PathParam("id") int id, String body) {
+		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		Status s = gson.fromJson(body, Status.class);
 		Request r = repo.getRequestById(id);
 		String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
@@ -96,10 +127,10 @@ public class RequestResource {
 		return Constants.FAILURE_STATUS;
 	}
 	
-	@DELETE
-	@Path("/{id}")
-	public Request deleteRequest(@PathParam("id") int id) { 
-		System.out.println(id);
-		return null;
-	}
+//	@DELETE
+//	@Path("/{id}")
+//	public Request deleteRequest(@PathParam("id") int id) {
+//		System.out.println(id);
+//		return null;
+//	}
 }

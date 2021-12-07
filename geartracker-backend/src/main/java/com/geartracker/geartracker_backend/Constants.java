@@ -1,12 +1,14 @@
 package com.geartracker.geartracker_backend;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Constants {
 	static final String SQL_URL =  "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
-	static final String SQL_USERNAME = "hemc";
-	static final String SQL_PASSWORD = "narrativearc";
+	static final String SQL_USERNAME = "rohit";
+	static final String SQL_PASSWORD = "Rohit@123";
 	
 	static final String MAIL_USERNAME = "geartrackertesting486@gmail.com";
 	static final String MAIL_PASSWORD = "geartrackertesting684";
@@ -44,4 +46,14 @@ public class Constants {
 	
 	static final int ERROR_STATUS = -1;
 
+
+	static final String SECURITY_KEY = "geartracker";
+	static final String ENCRYPTION_ALG = "Blowfish";
+	
+	static final String ADMIN_ROLE = "admin";
+	static final String STUDENT_ROLE = "student";
+	static final String SPORTS_COMM_ROLE = "sportscomm";
+	
+	static final ArrayList<String> ALL_ROLES = new ArrayList<String>(Arrays.asList(ADMIN_ROLE, STUDENT_ROLE, SPORTS_COMM_ROLE));
+	static final ArrayList<String> SUPER_USER_ROLES = new ArrayList<String>(Arrays.asList(ADMIN_ROLE, SPORTS_COMM_ROLE));
 }

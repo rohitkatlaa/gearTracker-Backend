@@ -2,22 +2,14 @@ package com.geartracker.geartracker_backend;
 import java.util.ArrayList;
 
 public class User {
-	private String id;
-	private String name;
-	private String password;
-	private String email;
-	private ArrayList <String> roles;
-	private int student;
-	private int fine;
-	private boolean sportsStatus;
-
-//	public User(String _id, String _name, String _password, String _email){
-//		id = _id;
-//		name = _name;
-//		password = _password;
-//		email = _email;
-//		roles = new ArrayList<String>();
-//	}
+	protected String id;
+	protected String name;
+	protected String password;
+	protected String email;
+	protected ArrayList <String> roles;
+	protected int student;
+	protected int fine;
+	protected boolean sportsStatus;
 
 	public User(){
 		student = 0;
