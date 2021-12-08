@@ -104,6 +104,7 @@ public class RequestResource {
 		Equipment e = equipment_repo.getEquipmentById(e_id);
 		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
 			equipment_repo.editEquipmentStatus(e_id, Constants.EQUIPMENT_STATUS_ISSUED);
+			repo.setRequestIssueDate(id, LocalDate.now());
 			repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
 			return Constants.SUCCESS_STATUS;
 		}
