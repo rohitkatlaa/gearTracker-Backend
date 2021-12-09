@@ -56,7 +56,7 @@ public class UserRepository {
 	
 	public User login(String id, String password) //Return user if id and password exists else return null
 	{
-		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND password = '" + password + "'";
+		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND passwrd = '" + password + "'";
 		User u = new User();
 		try {
 			Statement st = conn.createStatement();
@@ -67,7 +67,7 @@ public class UserRepository {
 			if(rs.next()) {
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));
-				u.resetPassword(rs.getString("password"));
+				u.resetPassword(rs.getString("passwrd"));
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
@@ -110,7 +110,7 @@ public class UserRepository {
 				User u = new User();
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));
-				u.resetPassword(rs.getString("password"));
+				u.resetPassword(rs.getString("passwrd"));
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
@@ -157,7 +157,7 @@ public class UserRepository {
 			if(rs.next()) {
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));
-				u.resetPassword(rs.getString("password"));
+				u.resetPassword(rs.getString("passwrd"));
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
@@ -194,7 +194,7 @@ public class UserRepository {
 		ResultSet rs4 = null;
         int stu_surrogate_id = 0;
 		try {
-			String sqlQuery1 = "insert into user (user_id,name,password,email,student) values (?,?,?,?,?)";
+			String sqlQuery1 = "insert into user (user_id,name,passwrd,email,student) values (?,?,?,?,?)";
 			PreparedStatement st = conn.prepareStatement(sqlQuery1);
 			st.setString(1,u.getId());
 			st.setString(2,u.getName());
@@ -249,7 +249,7 @@ public class UserRepository {
 
 	public User editUser(String id,User newU)
 	{
-		String sqlQuery1 = "UPDATE user SET name=?,password=?,email=? WHERE user_id = '" + id + "'";
+		String sqlQuery1 = "UPDATE user SET name=?,passwrd=?,email=? WHERE user_id = '" + id + "'";
 		try{
 			PreparedStatement st = conn.prepareStatement(sqlQuery1);
 			st.setString(1,newU.getName());
@@ -303,6 +303,19 @@ public class UserRepository {
 			System.out.println(exc);
 		} 
 		return getUserById(newU.getId()); 
+	}
+	
+	public String deleteUser(String id) {
+		String sqlQuery_delete = "DELETE from user WHERE id = '" + id +"'";
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate(sqlQuery_delete);
+			return Constants.SUCCESS_STATUS;
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.FAILURE_STATUS;
 	}
 	
 }
