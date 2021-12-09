@@ -305,4 +305,18 @@ public class UserRepository {
 		return getUserById(newU.getId()); 
 	}
 	
+	public String deleteUser(String id) {
+		String sqlQuery_delete = "DELETE from user WHERE user_id = '" + id +"'";
+		//String sqlQuery_studentid = "SELECT from user WHERE student is"
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate(sqlQuery_delete);
+			return Constants.SUCCESS_STATUS;
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.FAILURE_STATUS;
+	}
+	
 }
