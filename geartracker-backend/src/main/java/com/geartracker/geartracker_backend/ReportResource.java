@@ -97,5 +97,22 @@ public class ReportResource {
 		HashMap<String, Integer> map = getRequestCount();
 		return map.values().stream().reduce(0,Integer::sum);
 	}
+	
+	@GET
+	@Path("/requests/{type}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Integer getRequestStatusReport(@PathParam("type") String status) {
+		//Report for open/issued/...
+		authenticate(Constants.SUPER_USER_ROLES);
+		List<Request> requests = request_repo.getRequestsList();
+		int count = 0;
+		for(Request r: requests) {
+			if(r.getStatus().equals(status))
+			{
+				count ++;
+			}
+		}
+		return count;
+	}
 
 }

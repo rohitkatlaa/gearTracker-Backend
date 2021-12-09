@@ -38,10 +38,15 @@ public class RequestRepository {
 				int request_id = rs.getInt("surrogate_id");
 				int user_surr_id = rs.getInt("id_user");
 				int equipment_surr_id = rs.getInt("id_equipment");
-				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
+				Date isd = rs.getDate("issue_date");
+				LocalDate issue_date = (LocalDate)null;
+				if(!rs.wasNull())
+				{
+					issue_date = isd.toLocalDate();
+				}
 				Date rd = rs.getDate("return_date");
-//				LocalDate return_date = (LocalDate)null;
-				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
+				LocalDate return_date = (LocalDate)null;
+//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -69,10 +74,16 @@ public class RequestRepository {
 				int request_id = rs.getInt("surrogate_id");
 				int user_surr_id = rs.getInt("id_user");
 				int equipment_surr_id = rs.getInt("id_equipment");
-				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
+//				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
+				Date isd = rs.getDate("issue_date");
+				LocalDate issue_date = (LocalDate)null;
+				if(!rs.wasNull())
+				{
+					issue_date = isd.toLocalDate();
+				}
 				Date rd = rs.getDate("return_date");
-//				LocalDate return_date = (LocalDate)null;
-				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
+				LocalDate return_date = (LocalDate)null;
+//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -100,10 +111,15 @@ public class RequestRepository {
 				int request_id = rs.getInt("surrogate_id");
 				int user_surr_id = rs.getInt("id_user");
 				int equipment_surr_id = rs.getInt("id_equipment");
-				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
+				Date isd = rs.getDate("issue_date");
+				LocalDate issue_date = (LocalDate)null;
+				if(!rs.wasNull())
+				{
+					issue_date = isd.toLocalDate();
+				}
 				Date rd = rs.getDate("return_date");
-//				LocalDate return_date = (LocalDate)null;
-				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
+				LocalDate return_date = (LocalDate)null;
+//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -126,7 +142,13 @@ public class RequestRepository {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 			st.setInt(1,r.getUserSurrId());
 			st.setInt(2, r.getEquipmentSurrId());
-			st.setDate(3, Date.valueOf(r.getIssueDate()));
+//			st.setDate(3, Date.valueOf(r.getIssueDate()));
+			if(r.getIssueDate()==null) {
+				st.setNull(3, Types.DATE);
+			}
+			else{
+				st.setDate(3, Date.valueOf(r.getIssueDate()));
+			}
 			if(r.getReturnDate()==null) {
 				st.setNull(4, Types.DATE);
 			}
@@ -135,18 +157,6 @@ public class RequestRepository {
 			}
 			st.setString(5, r.getStatus());
 			st.executeUpdate();
-//			EquipmentRepository repo = new EquipmentRepository();
-//			String e_id = repo.getEquipmentId(r.getEquipmentSurrId());
-//			Equipment e = repo.getEquipmentById(e_id);
-//			String key = e.getName();
-//			if (stats_issue.containsKey(key))
-//			{
-//				stats_issue.put(key, stats_issue.get(key)+1);
-//			}
-//			else
-//			{
-//				stats_issue.put(key,1);
-//			}
 			
 		} catch(Exception exc) {
 			System.out.println(exc);
@@ -159,7 +169,13 @@ public class RequestRepository {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 		    st.setInt(1, newR.getUserSurrId());
 		    st.setInt(2, newR.getEquipmentSurrId());
-		    st.setDate(3, Date.valueOf(newR.getIssueDate()));
+//		    st.setDate(3, Date.valueOf(newR.getIssueDate()));
+		    if(newR.getIssueDate()==null) {
+				st.setNull(3, Types.DATE);
+			}
+			else{
+				st.setDate(3, Date.valueOf(newR.getIssueDate()));
+			}
 			if(newR.getReturnDate()==null) {
 				st.setNull(4, Types.DATE);
 			}
