@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 @Path("users")
 public class UserResource {
 	
-	UserRepository repo = new UserRepository();
+	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson();
 	
 	@Context
@@ -31,7 +31,7 @@ public class UserResource {
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
-			User u = repo.login(ld.getId(), ld.getPassword());
+			User u = user_repo.login(ld.getId(), ld.getPassword());
 			if(u != null) {
 				for(String role: u.getRoles()) {
 					if(roles.contains(role)) {
@@ -48,7 +48,7 @@ public class UserResource {
 	public List<User> getUsers() {
 		authenticate(Constants.SUPER_USER_ROLES);
 		try {
-			return repo.getUsersList();
+			return user_repo.getUsersList();
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -60,7 +60,7 @@ public class UserResource {
 	public User getUser(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			return repo.getUserById(id);
+			return user_repo.getUserById(id);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -72,7 +72,7 @@ public class UserResource {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
-			User u = repo.createUser(e);
+			User u = user_repo.createUser(e);
 			return u;
 		} catch(Exception e) {
 			System.out.println(e);
@@ -86,7 +86,7 @@ public class UserResource {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
-			return repo.editUser(id, e);
+			return user_repo.editUser(id, e);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);

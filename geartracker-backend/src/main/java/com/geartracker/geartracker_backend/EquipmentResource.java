@@ -35,9 +35,9 @@ class UserId {
 @Path("equipments")
 public class EquipmentResource {
 	
-	EquipmentRepository repo = new EquipmentRepository();
-	UserRepository user_repo = new UserRepository();
-	RequestRepository request_repo = new RequestRepository();
+	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
+	UserRepository user_repo = UserRepository.getInstance();
+	RequestRepository request_repo = RequestRepository.getInstance();
 	Gson gson = new Gson(); 
 	
 	@Context
@@ -63,7 +63,7 @@ public class EquipmentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipments() {
 		authenticate(Constants.ALL_ROLES);
-		return repo.getEquipmentsList();
+		return equipment_repo.getEquipmentsList();
 	}
 	
 	@GET
@@ -76,7 +76,7 @@ public class EquipmentResource {
 			List<Equipment> equipments = new ArrayList<>();
 			for(Request r: requests) {
 				if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
-					Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentSurrId()));
+					Equipment e = equipment_repo.getEquipmentById(equipment_repo.getEquipmentId(r.getEquipmentSurrId()));
 					equipments.add(e);
 				}
 			}
@@ -93,7 +93,7 @@ public class EquipmentResource {
 	public List<Equipment> getAvailableEquipment() {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			return repo.getAvailableEquipment();
+			return equipment_repo.getAvailableEquipment();
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -105,7 +105,7 @@ public class EquipmentResource {
 	public Equipment getEquipment(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			return repo.getEquipmentById(id);
+			return equipment_repo.getEquipmentById(id);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -118,16 +118,16 @@ public class EquipmentResource {
 		authenticate(Constants.ALL_ROLES);
 		try {
 			UserId user_id = gson.fromJson(body, UserId.class);
-			Equipment e = repo.getEquipmentById(id);
+			Equipment e = equipment_repo.getEquipmentById(id);
 			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
-				int e_id = repo.getSurrogateId(id);
+				int e_id = equipment_repo.getSurrogateId(id);
 				int u_id = user_repo.getSurrogateId(user_id.getUser_id());
 				if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
 					return Constants.FAILURE_STATUS;
 				}
 				Request r = new Request(id, e_id, user_id.getUser_id(), u_id, Constants.REQUEST_STATUS_OPEN, (LocalDate)null, (LocalDate)null);
 				e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
-				repo.editEquipment(id, e);
+				equipment_repo.editEquipment(id, e);
 				request_repo.createRequest(r);
 				return Constants.SUCCESS_STATUS;
 			}
@@ -142,7 +142,7 @@ public class EquipmentResource {
 	public Equipment createEquipment(Equipment equipment) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
-			repo.createEquipment(equipment);
+			equipment_repo.createEquipment(equipment);
 			return equipment;
 		} catch(Exception e) {
 			System.out.println(e);
@@ -155,7 +155,7 @@ public class EquipmentResource {
 	public Equipment editEquipment(@PathParam("id") String id, Equipment equipment) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
-			return repo.editEquipment(id, equipment);
+			return equipment_repo.editEquipment(id, equipment);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -167,7 +167,7 @@ public class EquipmentResource {
 	public String deleteEquipment(@PathParam("id") String id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
-			repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
+			equipment_repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
 			return Constants.SUCCESS_STATUS;
 		} catch(Exception e) {
 			System.out.println(e);

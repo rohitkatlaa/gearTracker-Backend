@@ -35,9 +35,9 @@ class Status {
 @Path("requests")
 public class RequestResource {
 	
-	RequestRepository repo = new RequestRepository();
-	EquipmentRepository equipment_repo = new EquipmentRepository();
-	UserRepository user_repo = new UserRepository();
+	RequestRepository request_repo = RequestRepository.getInstance();
+	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
+	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson();
 	
 	@Context
@@ -64,7 +64,7 @@ public class RequestResource {
 	public List<Request> getRequests() {
 		authenticate(Constants.SUPER_USER_ROLES);
 		try {
-			return repo.getRequestsList();
+			return request_repo.getRequestsList();
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -77,7 +77,7 @@ public class RequestResource {
 	public List<Request> getRequestsForStudent(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			return repo.getRequestsListForStudent(id);
+			return request_repo.getRequestsListForStudent(id);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -89,7 +89,7 @@ public class RequestResource {
 	public Request getRequestById(@PathParam("id") int id) {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			return repo.getRequestById(id);
+			return request_repo.getRequestById(id);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -100,7 +100,7 @@ public class RequestResource {
 	public Request createRequest(Request r) {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			repo.createRequest(r);
+			request_repo.createRequest(r);
 			return r;
 		} catch(Exception e) {
 			System.out.println(e);
@@ -113,7 +113,7 @@ public class RequestResource {
 	public Request editRequest(@PathParam("id") int id, Request r) {
 		authenticate(Constants.ALL_ROLES);
 		try {
-			return repo.editRequest(id, r);
+			return request_repo.editRequest(id, r);
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -125,13 +125,13 @@ public class RequestResource {
 	public String approveRequest(@PathParam("id") int id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
-			Request r = repo.getRequestById(id);
+			Request r = request_repo.getRequestById(id);
 			String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
 			Equipment e = equipment_repo.getEquipmentById(e_id);
 			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
 				equipment_repo.editEquipmentStatus(e_id, Constants.EQUIPMENT_STATUS_ISSUED);
-				repo.setRequestIssueDate(id, LocalDate.now());
-				repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
+				request_repo.setRequestIssueDate(id, LocalDate.now());
+				request_repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
 				return Constants.SUCCESS_STATUS;
 			}
 			return Constants.FAILURE_STATUS;
@@ -147,13 +147,13 @@ public class RequestResource {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			Status s = gson.fromJson(body, Status.class);
-			Request r = repo.getRequestById(id);
+			Request r = request_repo.getRequestById(id);
 			String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
 			Equipment e = equipment_repo.getEquipmentById(e_id);
 			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_ISSUED)) {
 				equipment_repo.editEquipmentStatus(e_id, s.getStatus());
-				repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
-				repo.setRequestReturnDate(id, LocalDate.now());
+				request_repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
+				request_repo.setRequestReturnDate(id, LocalDate.now());
 				return Constants.SUCCESS_STATUS;
 			}
 			return Constants.FAILURE_STATUS;

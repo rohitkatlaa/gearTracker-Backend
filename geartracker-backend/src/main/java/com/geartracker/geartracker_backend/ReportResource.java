@@ -18,9 +18,9 @@ import javax.ws.rs.core.Response;
 @Path("report")
 public class ReportResource {
 	
-	RequestRepository request_repo = new RequestRepository();
-	EquipmentRepository equipment_repo = new EquipmentRepository();
-	UserRepository user_repo = new UserRepository();
+	RequestRepository request_repo = RequestRepository.getInstance();
+	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
+	UserRepository user_repo = UserRepository.getInstance();
 	
 	@Context
 	private HttpHeaders httpHeaders;

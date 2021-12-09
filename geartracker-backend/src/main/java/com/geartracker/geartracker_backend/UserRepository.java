@@ -5,9 +5,10 @@ import java.util.List;
 import java.sql.*;
 
 public class UserRepository {
-	Connection conn = null;
+	private Connection conn = null;
+	private static UserRepository repo = null; 
 
-	public UserRepository() {
+	private UserRepository() {
 		String url = Constants.SQL_URL;
 		String username = Constants.SQL_USERNAME;
 		String password = Constants.SQL_PASSWORD;
@@ -19,6 +20,13 @@ public class UserRepository {
 			System.out.println(e);
 		}
 
+	}
+	
+	public static UserRepository getInstance() {
+		if(repo==null) {
+			repo = new UserRepository();
+		}
+		return repo;
 	}
 
 	public int getSurrogateId(String id) {

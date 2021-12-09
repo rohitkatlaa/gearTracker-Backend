@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 @Path("login")
 public class loginResource {
 
-	UserRepository repo = new UserRepository();
+	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson(); 
 
 	static String encrypt(String strClearText) {
@@ -69,7 +69,7 @@ public class loginResource {
 	public AuthUser login(String jsonString) {
 		try {
 			LoginData l_data = gson.fromJson(jsonString, LoginData.class);
-			User u = repo.login(l_data.getId(), l_data.getPassword());
+			User u = user_repo.login(l_data.getId(), l_data.getPassword());
 			if(u == null) {
 				return null;
 			}

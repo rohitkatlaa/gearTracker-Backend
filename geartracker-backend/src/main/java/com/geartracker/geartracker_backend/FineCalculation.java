@@ -97,13 +97,13 @@ public class FineCalculation{
 	
 	public static void main(String[] args){
 
-		UserRepository usr_repo = new UserRepository();
+		UserRepository usr_repo = UserRepository.getInstance();
 		usr_repo.getUserById("test");
 		
-		EquipmentRepository eq_repo = new EquipmentRepository();
+		EquipmentRepository eq_repo = EquipmentRepository.getInstance();
 		eq_repo.getEquipmentById("F1");
 		
-		RequestRepository req_repo = new RequestRepository();
+		RequestRepository req_repo = RequestRepository.getInstance();
 		req_repo.getRequestById(1);
 		
 		FineCalculation fineobj = new FineCalculation(eq_repo, req_repo, usr_repo);

@@ -11,11 +11,12 @@ public class RequestRepository {
 	List<Request> requests = new ArrayList<>();
 	Connection conn = null;
 	public static HashMap<String, Integer> stats_issue = new HashMap<>();
+	private static RequestRepository repo = null;
 	
-	EquipmentRepository equipment_repo = new EquipmentRepository();
-	UserRepository user_repo = new UserRepository();
+	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
+	UserRepository user_repo = UserRepository.getInstance();
 	
-	public RequestRepository() {
+	private RequestRepository() {
 		String url = Constants.SQL_URL;
 		String username = Constants.SQL_USERNAME;
 		String password = Constants.SQL_PASSWORD;
@@ -26,6 +27,13 @@ public class RequestRepository {
 			System.out.println("hello");
 			System.out.println(e);
 		}	
+	}
+	
+	public static RequestRepository getInstance() {
+		if(repo==null) {
+			repo = new RequestRepository();
+		}
+		return repo;
 	}
 	
 	public List<Request> getRequestsList() {
