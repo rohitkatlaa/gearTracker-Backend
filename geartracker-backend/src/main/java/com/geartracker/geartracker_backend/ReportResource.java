@@ -47,22 +47,27 @@ public class ReportResource {
 	public HashMap<String, Integer> getEquipmentStatusReport(@PathParam("type") String status) {
 		//Report for discarded/lost/broken
 		authenticate(Constants.SUPER_USER_ROLES);
-		HashMap<String, Integer> map = new HashMap<String, Integer>();
-		List<Equipment> equipments = equipment_repo.getEquipmentsList();
-		for(Equipment e: equipments) {
-			if(e.getStatus().equals(status)) {
-				String key = e.getName();
-				if (map.containsKey(key))
-					{
-						map.put(key, map.get(key)+1);
-					}
-					else
-					{
-						map.put(key,1);
-					}
+		try {
+			HashMap<String, Integer> map = new HashMap<String, Integer>();
+			List<Equipment> equipments = equipment_repo.getEquipmentsList();
+			for(Equipment e: equipments) {
+				if(e.getStatus().equals(status)) {
+					String key = e.getName();
+					if (map.containsKey(key))
+						{
+							map.put(key, map.get(key)+1);
+						}
+						else
+						{
+							map.put(key,1);
+						}
+				}
 			}
+			return map;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return map;
 	}
 	
 	@GET
@@ -71,22 +76,27 @@ public class ReportResource {
 	public HashMap<String, Integer> getRequestCount() {
 		//Report for number of requests per equipment category(name)
 		authenticate(Constants.SUPER_USER_ROLES);
-		HashMap<String, Integer> map = new HashMap<String, Integer>();
-		List<Request> requests = request_repo.getRequestsList();
-		for(Request r: requests) {
-			String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
-			Equipment e = equipment_repo.getEquipmentById(e_id);
-			String key = e.getName();
-			if (map.containsKey(key))
-			{
-				map.put(key, map.get(key)+1);
+		try {
+			HashMap<String, Integer> map = new HashMap<String, Integer>();
+			List<Request> requests = request_repo.getRequestsList();
+			for(Request r: requests) {
+				String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
+				Equipment e = equipment_repo.getEquipmentById(e_id);
+				String key = e.getName();
+				if (map.containsKey(key))
+				{
+					map.put(key, map.get(key)+1);
+				}
+				else
+				{
+					map.put(key,1);
+				}
 			}
-			else
-			{
-				map.put(key,1);
-			}
+			return map;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return map;
 	}
 	
 	@GET
@@ -94,8 +104,13 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Integer getTotalCount() {
 		authenticate(Constants.SUPER_USER_ROLES);
-		HashMap<String, Integer> map = getRequestCount();
-		return map.values().stream().reduce(0,Integer::sum);
+		try {
+			HashMap<String, Integer> map = getRequestCount();
+			return map.values().stream().reduce(0,Integer::sum);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@GET
@@ -104,15 +119,20 @@ public class ReportResource {
 	public Integer getRequestStatusReport(@PathParam("type") String status) {
 		//Report for open/issued/...
 		authenticate(Constants.SUPER_USER_ROLES);
-		List<Request> requests = request_repo.getRequestsList();
-		int count = 0;
-		for(Request r: requests) {
-			if(r.getStatus().equals(status))
-			{
-				count ++;
+		try {
+			List<Request> requests = request_repo.getRequestsList();
+			int count = 0;
+			for(Request r: requests) {
+				if(r.getStatus().equals(status))
+				{
+					count ++;
+				}
 			}
+			return count;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return count;
 	}
 
 }

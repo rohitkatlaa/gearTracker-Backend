@@ -63,7 +63,12 @@ public class RequestResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequests() {
 		authenticate(Constants.SUPER_USER_ROLES);
-		return repo.getRequestsList();
+		try {
+			return repo.getRequestsList();
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}	
 	}
 	
 	@GET
@@ -71,67 +76,90 @@ public class RequestResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequestsForStudent(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
-		return repo.getRequestsListForStudent(id);
+		try {
+			return repo.getRequestsListForStudent(id);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@GET
 	@Path("/{id}")
 	public Request getRequestById(@PathParam("id") int id) {
 		authenticate(Constants.ALL_ROLES);
-		return repo.getRequestById(id);
+		try {
+			return repo.getRequestById(id);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@POST
 	public Request createRequest(Request r) {
 		authenticate(Constants.ALL_ROLES);
-		repo.createRequest(r);
-		return r;
+		try {
+			repo.createRequest(r);
+			return r;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
 	@Path("/{id}")
 	public Request editRequest(@PathParam("id") int id, Request r) {
 		authenticate(Constants.ALL_ROLES);
-		return repo.editRequest(id, r);
+		try {
+			return repo.editRequest(id, r);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
 	@Path("/approve/{id}")
 	public String approveRequest(@PathParam("id") int id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		Request r = repo.getRequestById(id);
-		String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
-		Equipment e = equipment_repo.getEquipmentById(e_id);
-		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
-			equipment_repo.editEquipmentStatus(e_id, Constants.EQUIPMENT_STATUS_ISSUED);
-			repo.setRequestIssueDate(id, LocalDate.now());
-			repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
-			return Constants.SUCCESS_STATUS;
+		try {
+			Request r = repo.getRequestById(id);
+			String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
+			Equipment e = equipment_repo.getEquipmentById(e_id);
+			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_REQUESTED)) {
+				equipment_repo.editEquipmentStatus(e_id, Constants.EQUIPMENT_STATUS_ISSUED);
+				repo.setRequestIssueDate(id, LocalDate.now());
+				repo.editRequestStatus(id, Constants.REQUEST_STATUS_APPROVED);
+				return Constants.SUCCESS_STATUS;
+			}
+			return Constants.FAILURE_STATUS;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return Constants.FAILURE_STATUS;
 	}
 	
 	@PUT
 	@Path("/close/{id}")
 	public String closeRequest(@PathParam("id") int id, String body) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		Status s = gson.fromJson(body, Status.class);
-		Request r = repo.getRequestById(id);
-		String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
-		Equipment e = equipment_repo.getEquipmentById(e_id);
-		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_ISSUED)) {
-			equipment_repo.editEquipmentStatus(e_id, s.getStatus());
-			repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
-			repo.setRequestReturnDate(id, LocalDate.now());
-			return Constants.SUCCESS_STATUS;
+		try {
+			Status s = gson.fromJson(body, Status.class);
+			Request r = repo.getRequestById(id);
+			String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
+			Equipment e = equipment_repo.getEquipmentById(e_id);
+			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_ISSUED)) {
+				equipment_repo.editEquipmentStatus(e_id, s.getStatus());
+				repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);
+				repo.setRequestReturnDate(id, LocalDate.now());
+				return Constants.SUCCESS_STATUS;
+			}
+			return Constants.FAILURE_STATUS;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return Constants.FAILURE_STATUS;
 	}
-	
-//	@DELETE
-//	@Path("/{id}")
-//	public Request deleteRequest(@PathParam("id") int id) {
-//		System.out.println(id);
-//		return null;
-//	}
 }

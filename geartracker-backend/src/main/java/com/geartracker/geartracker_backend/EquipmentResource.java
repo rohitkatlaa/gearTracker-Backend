@@ -71,72 +71,107 @@ public class EquipmentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipmentsForStudent(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
-		List<Request> requests = request_repo.getRequestsListForStudent(id);
-		List<Equipment> equipments = new ArrayList<>();
-		for(Request r: requests) {
-			if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
-				Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentSurrId()));
-				equipments.add(e);
+		try {
+			List<Request> requests = request_repo.getRequestsListForStudent(id);
+			List<Equipment> equipments = new ArrayList<>();
+			for(Request r: requests) {
+				if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
+					Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentSurrId()));
+					equipments.add(e);
+				}
 			}
+			return equipments;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return equipments;
 	}
 	
 	
 	@GET
 	@Path("/available")
 	public List<Equipment> getAvailableEquipment() {
-		authenticate(Constants.ALL_ROLES); 
-		return repo.getAvailableEquipment();
+		authenticate(Constants.ALL_ROLES);
+		try {
+			return repo.getAvailableEquipment();
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@GET
 	@Path("/{id}")
 	public Equipment getEquipment(@PathParam("id") String id) {
-		authenticate(Constants.ALL_ROLES); 
-		return repo.getEquipmentById(id);
+		authenticate(Constants.ALL_ROLES);
+		try {
+			return repo.getEquipmentById(id);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@POST
 	@Path("/book/{id}")
 	public String bookEquipment(@PathParam("id") String id, String body) {
 		authenticate(Constants.ALL_ROLES);
-		UserId user_id = gson.fromJson(body, UserId.class);
-		Equipment e = repo.getEquipmentById(id);
-		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
-			int e_id = repo.getSurrogateId(id);
-			int u_id = user_repo.getSurrogateId(user_id.getUser_id());
-			if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
-				return Constants.FAILURE_STATUS;
+		try {
+			UserId user_id = gson.fromJson(body, UserId.class);
+			Equipment e = repo.getEquipmentById(id);
+			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
+				int e_id = repo.getSurrogateId(id);
+				int u_id = user_repo.getSurrogateId(user_id.getUser_id());
+				if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
+					return Constants.FAILURE_STATUS;
+				}
+				Request r = new Request(id, e_id, user_id.getUser_id(), u_id, Constants.REQUEST_STATUS_OPEN, (LocalDate)null, (LocalDate)null);
+				e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
+				repo.editEquipment(id, e);
+				request_repo.createRequest(r);
+				return Constants.SUCCESS_STATUS;
 			}
-			Request r = new Request(id, e_id, user_id.getUser_id(), u_id, Constants.REQUEST_STATUS_OPEN, (LocalDate)null, (LocalDate)null);
-			e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
-			repo.editEquipment(id, e);
-			request_repo.createRequest(r);
-			return Constants.SUCCESS_STATUS;
+			return Constants.FAILURE_STATUS;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return Constants.FAILURE_STATUS;
 	}
 	
 	@POST
-	public Equipment createEquipment(Equipment e) {
+	public Equipment createEquipment(Equipment equipment) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		repo.createEquipment(e);
-		return e;
+		try {
+			repo.createEquipment(equipment);
+			return equipment;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
 	@Path("/{id}")
-	public Equipment editEquipment(@PathParam("id") String id, Equipment e) {
+	public Equipment editEquipment(@PathParam("id") String id, Equipment equipment) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		return repo.editEquipment(id, e);
+		try {
+			return repo.editEquipment(id, equipment);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@DELETE
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
-		return Constants.SUCCESS_STATUS;
+		try {
+			repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
+			return Constants.SUCCESS_STATUS;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 }

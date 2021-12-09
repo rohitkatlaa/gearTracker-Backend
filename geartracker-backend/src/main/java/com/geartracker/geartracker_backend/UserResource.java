@@ -47,30 +47,50 @@ public class UserResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getUsers() {
 		authenticate(Constants.SUPER_USER_ROLES);
-		return repo.getUsersList();
+		try {
+			return repo.getUsersList();
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@GET
 	@Path("/{id}")
 	public User getUser(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
-		return repo.getUserById(id);
+		try {
+			return repo.getUserById(id);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@POST
 	public User createUser(String json) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		User e = gson.fromJson(json, User.class);
-		User u = repo.createUser(e);
-		return u;
+		try {
+			User e = gson.fromJson(json, User.class);
+			User u = repo.createUser(e);
+			return u;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
 	@Path("/{id}")
 	public User editUser(@PathParam("id") String id, String json) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		User e = gson.fromJson(json, User.class);
-		return repo.editUser(id, e);
+		try {
+			User e = gson.fromJson(json, User.class);
+			return repo.editUser(id, e);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 }
