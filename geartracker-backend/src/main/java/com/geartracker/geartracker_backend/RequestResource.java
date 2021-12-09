@@ -75,6 +75,14 @@ public class RequestResource {
 	}
 	
 	@GET
+	@Path("/equipment/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Request> getRequestsForEquipment(@PathParam("id") String id) {
+		authenticate(Constants.SUPER_USER_ROLES);
+		return repo.getRequestsListForEquipment(id);
+	}
+	
+	@GET
 	@Path("/{id}")
 	public Request getRequestById(@PathParam("id") int id) {
 		authenticate(Constants.ALL_ROLES);

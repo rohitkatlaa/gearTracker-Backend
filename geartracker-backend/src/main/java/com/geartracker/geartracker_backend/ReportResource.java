@@ -45,7 +45,7 @@ public class ReportResource {
 	@Path("/equipment/{type}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getEquipmentStatusReport(@PathParam("type") String status) {
-		//Report for discarded/lost/broken
+		//Report for count of discarded/lost/broken
 		authenticate(Constants.SUPER_USER_ROLES);
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		List<Equipment> equipments = equipment_repo.getEquipmentsList();
@@ -63,6 +63,20 @@ public class ReportResource {
 			}
 		}
 		return map;
+	}
+	
+	@GET
+	@Path("/fine")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Integer getTotalFine() {
+		authenticate(Constants.SUPER_USER_ROLES);
+		int sum=0;
+		List<User> lst = user_repo.getUsersList();
+		for(User u: lst) {
+			if(u.getRoles().contains(Constants.STUDENT_ROLE))
+				sum += u.getFine();
+		}
+		return sum;
 	}
 	
 	@GET
@@ -115,18 +129,6 @@ public class ReportResource {
 		return count;
 	}
 	
-	@GET
-	@Path("/fine")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Integer getTotalFine() {
-		authenticate(Constants.SUPER_USER_ROLES);
-		int sum=0;
-		List<User> lst = user_repo.getUsersList();
-		for(User u: lst) {
-			if(u.getRoles().contains(Constants.STUDENT_ROLE))
-				sum += u.getFine();
-		}
-		return sum;
-	}
+	
 
 }
