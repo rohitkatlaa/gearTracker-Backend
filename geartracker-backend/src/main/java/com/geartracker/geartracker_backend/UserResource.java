@@ -73,10 +73,10 @@ public class UserResource {
 		return repo.editUser(id, e);
 	}
 	
-	@PUT
-	@Path("/delete/{id}")
-	public String deleteUser(@PathParam("id") String id) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		return repo.deleteUser(id);
-	}
+	// @PUT
+	// @Path("/delete/{id}")
+	// public String deleteUser(@PathParam("id") String id) {
+	// 	authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+	// 	return repo.deleteUser(id);
+	// }
 }

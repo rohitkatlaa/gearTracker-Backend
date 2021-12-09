@@ -114,5 +114,19 @@ public class ReportResource {
 		}
 		return count;
 	}
+	
+	@GET
+	@Path("/fine")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Integer getTotalFine() {
+		authenticate(Constants.SUPER_USER_ROLES);
+		int sum=0;
+		List<User> lst = user_repo.getUsersList();
+		for(User u: lst) {
+			if(u.getRoles().contains(Constants.STUDENT_ROLE))
+				sum += u.getFine();
+		}
+		return sum;
+	}
 
 }
