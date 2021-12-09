@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class UserRepository {
 	Connection conn = null;
-	
+
 	public UserRepository() {
 		String url = Constants.SQL_URL;
 		String username = Constants.SQL_USERNAME;
@@ -18,9 +18,9 @@ public class UserRepository {
 			System.out.println("hello");
 			System.out.println(e);
 		}
-		
+
 	}
-	
+
 	public int getSurrogateId(String id) {
 		String sqlQuery = "select surrogate_id from user where user_id = '" + id + "'";
 		try {
@@ -30,13 +30,13 @@ public class UserRepository {
 				int surrogate_id = rs.getInt("surrogate_id");
 				return surrogate_id;
 			}
-			
+
 		} catch(Exception exc) {
 			System.out.println(exc);
 		}
 		return Constants.ERROR_STATUS;
 	}
-	
+
 	public String getUserId(int id) {
 		String sqlQuery = "select user_id from user where surrogate_id = '" + id + "'";
 		try {
@@ -46,17 +46,17 @@ public class UserRepository {
 				String e_id = rs.getString("user_id");
 				return e_id;
 			}
-			
+
 		} catch(Exception exc) {
 			System.out.println(exc);
 		}
 		return Constants.FAILURE_STATUS;
 	}
-	
-	
+
+
 	public User login(String id, String password) //Return user if id and password exists else return null
 	{
-		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND passwrd = '" + password + "'";
+		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND password = '" + password + "'";
 		User u = new User();
 		try {
 			Statement st = conn.createStatement();
@@ -67,7 +67,7 @@ public class UserRepository {
 			if(rs.next()) {
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));
-				u.resetPassword(rs.getString("passwrd"));
+				u.resetPassword(rs.getString("password"));
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
@@ -99,7 +99,7 @@ public class UserRepository {
 		}
 		return u;
 	}
-	
+
 	public List<User> getUsersList() {
 		List<User> users = new ArrayList<>();
 		String sqlQuery1 = "select * from user";
@@ -110,7 +110,7 @@ public class UserRepository {
 				User u = new User();
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));
-				u.resetPassword(rs.getString("passwrd"));
+				u.resetPassword(rs.getString("password"));
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
@@ -157,7 +157,7 @@ public class UserRepository {
 			if(rs.next()) {
 				u.setId(rs.getString("user_id"));
 				u.setName(rs.getString("name"));
-				u.resetPassword(rs.getString("passwrd"));
+				u.resetPassword(rs.getString("password"));
 				u.setEmail(rs.getString("email"));
 				Integer val = rs.getInt("student");
 				if(rs.wasNull())
@@ -194,7 +194,7 @@ public class UserRepository {
 		ResultSet rs4 = null;
         int stu_surrogate_id = 0;
 		try {
-			String sqlQuery1 = "insert into user (user_id,name,passwrd,email,student) values (?,?,?,?,?)";
+			String sqlQuery1 = "insert into user (user_id,name,password,email,student) values (?,?,?,?,?)";
 			PreparedStatement st = conn.prepareStatement(sqlQuery1);
 			st.setString(1,u.getId());
 			st.setString(2,u.getName());
@@ -249,7 +249,7 @@ public class UserRepository {
 
 	public User editUser(String id,User newU)
 	{
-		String sqlQuery1 = "UPDATE user SET name=?,passwrd=?,email=? WHERE user_id = '" + id + "'";
+		String sqlQuery1 = "UPDATE user SET name=?,password=?,email=? WHERE user_id = '" + id + "'";
 		try{
 			PreparedStatement st = conn.prepareStatement(sqlQuery1);
 			st.setString(1,newU.getName());
@@ -280,8 +280,8 @@ public class UserRepository {
 				old_roles.add(rs.getString("role"));
 			}
 			ArrayList<String> new_roles = newU.getRoles();
-			
-			
+
+
 			for (String e : old_roles) {
 				if(!new_roles.contains(e))
 				{
@@ -304,18 +304,5 @@ public class UserRepository {
 		} 
 		return getUserById(newU.getId()); 
 	}
-	
-	public String deleteUser(String id) {
-		String sqlQuery_delete = "DELETE from user WHERE id = '" + id +"'";
-		try {
-			Statement st = conn.createStatement();
-			st.executeUpdate(sqlQuery_delete);
-			return Constants.SUCCESS_STATUS;
-			
-		} catch(Exception exc) {
-			System.out.println(exc);
-		}
-		return Constants.FAILURE_STATUS;
-	}
-	
+
 }
