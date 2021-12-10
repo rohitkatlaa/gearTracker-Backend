@@ -167,8 +167,16 @@ public class EquipmentResource {
 	public String deleteEquipment(@PathParam("id") String id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
-			equipment_repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
-			return Constants.SUCCESS_STATUS;
+			RequestRepository req_repo = RequestRepository.getInstance();
+			List<Request> req_list = req_repo.getRequestsListForEquipment(id);
+			
+			for(Request req:req_list) {
+		 		if(req.getStatus().equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)) {
+		 			return Constants.EQUIPMENT_ACTIVE_STATUS;
+		 		}
+		 	}
+		 	return equipment_repo.deleteEquipment(id);
+		 	
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);

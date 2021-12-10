@@ -93,4 +93,20 @@ public class UserResource {
 		}
 	}
 	
+	@PUT
+	@Path("/delete/{id}")
+	public String deleteUser(@PathParam("id") String id) {
+	 	authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+	 	
+	 	RequestRepository req_repo = RequestRepository.getInstance();
+	 	List<Request> req_list = req_repo.getRequestsListForStudent(id);
+	 	
+	 	for(Request req:req_list) {
+	 		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
+	 			return Constants.USER_ACTIVE_STATUS;
+	 		}
+	 	}
+	 	return user_repo.deleteUser(id);
+	}
+	
 }

@@ -13,10 +13,19 @@ public class FineCalculation{
 	private RequestRepository req_repo;
 	private UserRepository usr_repo;
 	
-	public FineCalculation(EquipmentRepository eq_repo, RequestRepository req_repo, UserRepository usr_repo){
-		this.eq_repo = eq_repo;
-		this.req_repo = req_repo;
-		this.usr_repo = usr_repo;
+	private static FineCalculation fineobj = null;
+	
+	private FineCalculation(){
+		this.eq_repo = EquipmentRepository.getInstance();
+		this.req_repo = RequestRepository.getInstance();
+		this.usr_repo = UserRepository.getInstance();
+	}
+	
+	public static FineCalculation getInstance() {
+		if(fineobj == null) {
+			fineobj = new FineCalculation();
+		}
+		return fineobj;
 	}
 	
 	public long daysOpen(Request req){
@@ -34,6 +43,8 @@ public class FineCalculation{
 	public void computeFine(Request req){
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
+		System.out.println(req.getRequestId());
+		System.out.println(req.getStatus());
 		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
 			String eq_id = eq_repo.getEquipmentId(req.getEquipmentSurrId()); //Using surrogate ID in request, get equipment ID.
 			Equipment eq = eq_repo.getEquipmentById(eq_id); //Retrieve equipment.
@@ -44,6 +55,7 @@ public class FineCalculation{
 
 			String usr_id = usr_repo.getUserId(req.getUserSurrId());
 			User usr = usr_repo.getUserById(usr_id);
+			System.out.println(usr_id);
 		
 			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)){
 				System.out.println(daysOpen(req));
@@ -86,17 +98,6 @@ public class FineCalculation{
 	}
 	
 	public static void main(String[] args){
-
-		UserRepository usr_repo = UserRepository.getInstance();
-		usr_repo.getUserById("test");
-		
-		EquipmentRepository eq_repo = EquipmentRepository.getInstance();
-		eq_repo.getEquipmentById("F1");
-		
-		RequestRepository req_repo = RequestRepository.getInstance();
-		req_repo.getRequestById(1);
-		
-		FineCalculation fineobj = new FineCalculation(eq_repo, req_repo, usr_repo);
-		fineobj.scheduleScan();
+		FineCalculation.getInstance().scheduleScan();
 	}
 }

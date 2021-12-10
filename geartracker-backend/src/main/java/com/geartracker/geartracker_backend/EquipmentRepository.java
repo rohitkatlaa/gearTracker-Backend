@@ -179,10 +179,34 @@ public class EquipmentRepository {
 		try {
 			Statement st = conn.createStatement();
 			st.executeUpdate(sqlQuery);
+			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
+				
+				RequestRepository req_repo = RequestRepository.getInstance();
+				FineCalculation fineobj = FineCalculation.getInstance();
+				List<Request> req_list = req_repo.getRequestsListForEquipment(id);
+				
+				for(Request req: req_list) {
+					System.out.println("Reached edit Equip");
+					fineobj.computeFine(req);
+				}
+			}
 		}catch (Exception ex) {
 			System.out.println(ex);
 			return "failure";
 		}
 		return "success";
+	}
+	
+	public String deleteEquipment(String id) {
+		String sqlQuery_delete = "DELETE from equipment WHERE id = '" + id +"'";
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate(sqlQuery_delete);
+			return Constants.SUCCESS_STATUS;
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return Constants.FAILURE_STATUS;
 	}
 }
