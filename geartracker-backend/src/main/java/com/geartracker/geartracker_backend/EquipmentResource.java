@@ -35,9 +35,9 @@ class UserId {
 @Path("equipments")
 public class EquipmentResource {
 	
-	EquipmentRepository repo = new EquipmentRepository();
-	UserRepository user_repo = new UserRepository();
-	RequestRepository request_repo = new RequestRepository();
+	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
+	UserRepository user_repo = UserRepository.getInstance();
+	RequestRepository request_repo = RequestRepository.getInstance();
 	Gson gson = new Gson(); 
 	
 	@Context
@@ -63,7 +63,7 @@ public class EquipmentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipments() {
 		authenticate(Constants.ALL_ROLES);
-		return repo.getEquipmentsList();
+		return equipment_repo.getEquipmentsList();
 	}
 	
 	@GET
@@ -71,80 +71,115 @@ public class EquipmentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipmentsForStudent(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
-		List<Request> requests = request_repo.getRequestsListForStudent(id);
-		List<Equipment> equipments = new ArrayList<>();
-		for(Request r: requests) {
-			if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
-				Equipment e = repo.getEquipmentById(repo.getEquipmentId(r.getEquipmentSurrId()));
-				equipments.add(e);
+		try {
+			List<Request> requests = request_repo.getRequestsListForStudent(id);
+			List<Equipment> equipments = new ArrayList<>();
+			for(Request r: requests) {
+				if(r.getStatus().equals(Constants.REQUEST_STATUS_APPROVED)) {
+					Equipment e = equipment_repo.getEquipmentById(equipment_repo.getEquipmentId(r.getEquipmentSurrId()));
+					equipments.add(e);
+				}
 			}
+			return equipments;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return equipments;
 	}
 	
 	
 	@GET
 	@Path("/available")
 	public List<Equipment> getAvailableEquipment() {
-		authenticate(Constants.ALL_ROLES); 
-		return repo.getAvailableEquipment();
+		authenticate(Constants.ALL_ROLES);
+		try {
+			return equipment_repo.getAvailableEquipment();
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@GET
 	@Path("/{id}")
 	public Equipment getEquipment(@PathParam("id") String id) {
-		authenticate(Constants.ALL_ROLES); 
-		return repo.getEquipmentById(id);
+		authenticate(Constants.ALL_ROLES);
+		try {
+			return equipment_repo.getEquipmentById(id);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@POST
 	@Path("/book/{id}")
 	public String bookEquipment(@PathParam("id") String id, String body) {
 		authenticate(Constants.ALL_ROLES);
-		UserId user_id = gson.fromJson(body, UserId.class);
-		Equipment e = repo.getEquipmentById(id);
-		if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
-			int e_id = repo.getSurrogateId(id);
-			int u_id = user_repo.getSurrogateId(user_id.getUser_id());
-			if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
-				return Constants.FAILURE_STATUS;
+		try {
+			UserId user_id = gson.fromJson(body, UserId.class);
+			Equipment e = equipment_repo.getEquipmentById(id);
+			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_AVAILABLE)) {
+				int e_id = equipment_repo.getSurrogateId(id);
+				int u_id = user_repo.getSurrogateId(user_id.getUser_id());
+				if(e_id == Constants.ERROR_STATUS || u_id == Constants.ERROR_STATUS) {
+					return Constants.FAILURE_STATUS;
+				}
+				Request r = new Request(id, e_id, user_id.getUser_id(), u_id, Constants.REQUEST_STATUS_OPEN, (LocalDate)null, (LocalDate)null);
+				e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
+				equipment_repo.editEquipment(id, e);
+				request_repo.createRequest(r);
+				return Constants.SUCCESS_STATUS;
 			}
-			Request r = new Request(id, e_id, user_id.getUser_id(), u_id, Constants.REQUEST_STATUS_OPEN, (LocalDate)null, (LocalDate)null);
-			e.setStatus(Constants.EQUIPMENT_STATUS_REQUESTED);
-			repo.editEquipment(id, e);
-			request_repo.createRequest(r);
-			return Constants.SUCCESS_STATUS;
+			return Constants.FAILURE_STATUS;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		return Constants.FAILURE_STATUS;
 	}
 	
 	@POST
-	public Equipment createEquipment(Equipment e) {
+	public Equipment createEquipment(Equipment equipment) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		repo.createEquipment(e);
-		return e;
+		try {
+			equipment_repo.createEquipment(equipment);
+			return equipment;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
 	@Path("/{id}")
-	public Equipment editEquipment(@PathParam("id") String id, Equipment e) {
+	public Equipment editEquipment(@PathParam("id") String id, Equipment equipment) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		return repo.editEquipment(id, e);
+		try {
+			return equipment_repo.editEquipment(id, equipment);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@DELETE
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		
-		RequestRepository req_repo = new RequestRepository();
-	 	List<Request> req_list = req_repo.getRequestsListForEquipment(id);
-	 	
-	 	for(Request req:req_list) {
-	 		if(req.getStatus().equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)) {
-	 			return Constants.EQUIPMENT_ACTIVE_STATUS;
-	 		}
-	 	}
-	 	return repo.deleteEquipment(id);
+		try {
+			RequestRepository req_repo = RequestRepository.getInstance();
+			List<Request> req_list = req_repo.getRequestsListForEquipment(id);
+			
+			for(Request req:req_list) {
+		 		if(req.getStatus().equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)) {
+		 			return Constants.EQUIPMENT_ACTIVE_STATUS;
+		 		}
+		 	}
+		 	return equipment_repo.deleteEquipment(id);
+		 	
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 }

@@ -5,9 +5,10 @@ import java.util.List;
 import java.sql.*;
 
 public class EquipmentRepository {
-	Connection conn = null;
+	private Connection conn = null;
+	private static EquipmentRepository repo = null;
 	
-	public EquipmentRepository() {
+	private EquipmentRepository() {
 		String url = Constants.SQL_URL;
 		String username = Constants.SQL_USERNAME;
 		String password = Constants.SQL_PASSWORD;
@@ -19,6 +20,13 @@ public class EquipmentRepository {
 			System.out.println(e);
 		}
 		
+	}
+	
+	public static EquipmentRepository getInstance() {
+		if(repo==null) {
+			repo = new EquipmentRepository();
+		}
+		return repo;
 	}
 	
 	public String getEquipmentId(int id) {
@@ -173,8 +181,8 @@ public class EquipmentRepository {
 			st.executeUpdate(sqlQuery);
 			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
 				
-				RequestRepository req_repo = new RequestRepository();
-				FineCalculation fineobj = new FineCalculation(new EquipmentRepository(),req_repo, new UserRepository());
+				RequestRepository req_repo = RequestRepository.getInstance();
+				FineCalculation fineobj = FineCalculation.getInstance();
 				List<Request> req_list = req_repo.getRequestsListForEquipment(id);
 				
 				for(Request req: req_list) {

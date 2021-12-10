@@ -5,9 +5,10 @@ import java.util.List;
 import java.sql.*;
 
 public class UserRepository {
-	Connection conn = null;
-	
-	public UserRepository() {
+	private Connection conn = null;
+	private static UserRepository repo = null; 
+
+	private UserRepository() {
 		String url = Constants.SQL_URL;
 		String username = Constants.SQL_USERNAME;
 		String password = Constants.SQL_PASSWORD;
@@ -18,9 +19,16 @@ public class UserRepository {
 			System.out.println("hello");
 			System.out.println(e);
 		}
-		
+
 	}
 	
+	public static UserRepository getInstance() {
+		if(repo==null) {
+			repo = new UserRepository();
+		}
+		return repo;
+	}
+
 	public int getSurrogateId(String id) {
 		String sqlQuery = "select surrogate_id from user where user_id = '" + id + "'";
 		try {
@@ -30,13 +38,13 @@ public class UserRepository {
 				int surrogate_id = rs.getInt("surrogate_id");
 				return surrogate_id;
 			}
-			
+
 		} catch(Exception exc) {
 			System.out.println(exc);
 		}
 		return Constants.ERROR_STATUS;
 	}
-	
+
 	public String getUserId(int id) {
 		String sqlQuery = "select user_id from user where surrogate_id = '" + id + "'";
 		try {
@@ -46,14 +54,14 @@ public class UserRepository {
 				String e_id = rs.getString("user_id");
 				return e_id;
 			}
-			
+
 		} catch(Exception exc) {
 			System.out.println(exc);
 		}
 		return Constants.FAILURE_STATUS;
 	}
-	
-	
+
+
 	public User login(String id, String password) //Return user if id and password exists else return null
 	{
 		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND password = '" + password + "'";
@@ -99,7 +107,7 @@ public class UserRepository {
 		}
 		return u;
 	}
-	
+
 	public List<User> getUsersList() {
 		List<User> users = new ArrayList<>();
 		String sqlQuery1 = "select * from user";
@@ -280,8 +288,8 @@ public class UserRepository {
 				old_roles.add(rs.getString("role"));
 			}
 			ArrayList<String> new_roles = newU.getRoles();
-			
-			
+
+
 			for (String e : old_roles) {
 				if(!new_roles.contains(e))
 				{
@@ -317,5 +325,6 @@ public class UserRepository {
 		}
 		return Constants.FAILURE_STATUS;
 	}
-	
+
 }
+

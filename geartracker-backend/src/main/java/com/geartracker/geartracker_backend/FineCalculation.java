@@ -23,10 +23,19 @@ public class FineCalculation{
 	private RequestRepository req_repo;
 	private UserRepository usr_repo;
 	
-	public FineCalculation(EquipmentRepository eq_repo, RequestRepository req_repo, UserRepository usr_repo){
-		this.eq_repo = eq_repo;
-		this.req_repo = req_repo;
-		this.usr_repo = usr_repo;
+	private static FineCalculation fineobj = null;
+	
+	private FineCalculation(){
+		this.eq_repo = EquipmentRepository.getInstance();
+		this.req_repo = RequestRepository.getInstance();
+		this.usr_repo = UserRepository.getInstance();
+	}
+	
+	public static FineCalculation getInstance() {
+		if(fineobj == null) {
+			fineobj = new FineCalculation();
+		}
+		return fineobj;
 	}
 	
 	public long daysOpen(Request req){
@@ -99,19 +108,6 @@ public class FineCalculation{
 	}
 	
 	public static void main(String[] args){
-		
-		
-		UserRepository usr_repo = new UserRepository();
-		usr_repo.getUserById("test");
-		
-		EquipmentRepository eq_repo = new EquipmentRepository();
-		//eq_repo.editEquipmentStatus("CBA1", Constants.EQUIPMENT_STATUS_LOST);
-		eq_repo.getEquipmentById("F1");
-		
-		RequestRepository req_repo = new RequestRepository();
-		req_repo.getRequestById(1);
-		
-		FineCalculation fineobj = new FineCalculation(eq_repo, req_repo, usr_repo);
-		fineobj.scheduleScan();
+		FineCalculation.getInstance().scheduleScan();
 	}
 }

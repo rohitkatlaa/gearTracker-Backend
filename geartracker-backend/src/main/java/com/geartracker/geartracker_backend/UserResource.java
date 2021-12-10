@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 @Path("users")
 public class UserResource {
 	
-	UserRepository repo = new UserRepository();
+	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson();
 	
 	@Context
@@ -31,7 +31,7 @@ public class UserResource {
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
-			User u = repo.login(ld.getId(), ld.getPassword());
+			User u = user_repo.login(ld.getId(), ld.getPassword());
 			if(u != null) {
 				for(String role: u.getRoles()) {
 					if(roles.contains(role)) {
@@ -47,30 +47,50 @@ public class UserResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getUsers() {
 		authenticate(Constants.SUPER_USER_ROLES);
-		return repo.getUsersList();
+		try {
+			return user_repo.getUsersList();
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@GET
 	@Path("/{id}")
 	public User getUser(@PathParam("id") String id) {
 		authenticate(Constants.ALL_ROLES);
-		return repo.getUserById(id);
+		try {
+			return user_repo.getUserById(id);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@POST
 	public User createUser(String json) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		User e = gson.fromJson(json, User.class);
-		User u = repo.createUser(e);
-		return u;
+		try {
+			User e = gson.fromJson(json, User.class);
+			User u = user_repo.createUser(e);
+			return u;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
 	@Path("/{id}")
 	public User editUser(@PathParam("id") String id, String json) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		User e = gson.fromJson(json, User.class);
-		return repo.editUser(id, e);
+		try {
+			User e = gson.fromJson(json, User.class);
+			return user_repo.editUser(id, e);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 	
 	@PUT
@@ -78,7 +98,7 @@ public class UserResource {
 	public String deleteUser(@PathParam("id") String id) {
 	 	authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 	 	
-	 	RequestRepository req_repo = new RequestRepository();
+	 	RequestRepository req_repo = RequestRepository.getInstance();
 	 	List<Request> req_list = req_repo.getRequestsListForStudent(id);
 	 	
 	 	for(Request req:req_list) {
@@ -86,7 +106,7 @@ public class UserResource {
 	 			return Constants.USER_ACTIVE_STATUS;
 	 		}
 	 	}
-	 	return repo.deleteUser(id);
+	 	return user_repo.deleteUser(id);
 	}
 	
 }
