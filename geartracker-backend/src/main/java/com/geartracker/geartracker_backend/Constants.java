@@ -1,14 +1,18 @@
 package com.geartracker.geartracker_backend;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Constants {
 	static final String SQL_URL =  "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
+<<<<<<< HEAD
 	static final String SQL_USERNAME = "hemc";
 	static final String SQL_PASSWORD = "narrativearc";
+=======
+	static final String SQL_USERNAME = "rohit";
+	static final String SQL_PASSWORD = "Rohit@123";
+>>>>>>> origin/main
 	
 	static final String MAIL_USERNAME = "geartrackertesting486@gmail.com";
 	static final String MAIL_PASSWORD = "geartrackertesting684";
@@ -33,8 +37,11 @@ public class Constants {
 	static final String REQUEST_STATUS_OPEN = "open";
 	static final String REQUEST_STATUS_APPROVED = "approved";
 	static final String REQUEST_STATUS_CLOSED = "closed";
+<<<<<<< HEAD
 	//static final String REQUEST_STATUS_ISSUED = "issued";
 //	static final LocalDate RETURN_DATE_DUMMY = LocalDate.of(2000, 1, 1);
+=======
+>>>>>>> origin/main
 	
 	static final String USER_ACTIVE_STATUS = "User has active request, cannot be deleted yet.";
 	static final String EQUIPMENT_ACTIVE_STATUS = "Equipment has been issued, cannot be deleted yet.";

@@ -3,6 +3,8 @@ package com.geartracker.geartracker_backend;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 
@@ -13,7 +15,7 @@ import com.google.gson.Gson;
 @Path("login")
 public class loginResource {
 
-	UserRepository repo = new UserRepository();
+	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson(); 
 
 	static String encrypt(String strClearText) {
@@ -65,14 +67,19 @@ public class loginResource {
 	
 	@POST
 	public AuthUser login(String jsonString) {
-		LoginData l_data = gson.fromJson(jsonString, LoginData.class);
-		User u = repo.login(l_data.getId(), l_data.getPassword());
-		if(u == null) {
-			return null;
+		try {
+			LoginData l_data = gson.fromJson(jsonString, LoginData.class);
+			User u = user_repo.login(l_data.getId(), l_data.getPassword());
+			if(u == null) {
+				return null;
+			}
+			String token = getAuthKey(l_data.getId(), l_data.getPassword());
+			AuthUser au = new AuthUser(u, token);
+			return au;
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		String token = getAuthKey(l_data.getId(), l_data.getPassword());
-		AuthUser au = new AuthUser(u, token);
-		return au;
 	}
 
 }

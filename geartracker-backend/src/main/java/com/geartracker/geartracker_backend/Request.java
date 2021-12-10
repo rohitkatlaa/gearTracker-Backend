@@ -1,6 +1,5 @@
 package com.geartracker.geartracker_backend;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Request {
