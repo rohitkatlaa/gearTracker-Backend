@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Constants {
 	static final String SQL_URL =  "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
-	static final String SQL_USERNAME = "root";
+	static final String SQL_USERNAME = "hemc";
 	static final String SQL_PASSWORD = "narrativearc";
 	
 	static final String MAIL_USERNAME = "geartrackertesting486@gmail.com";
@@ -33,7 +33,11 @@ public class Constants {
 	static final String REQUEST_STATUS_OPEN = "open";
 	static final String REQUEST_STATUS_APPROVED = "approved";
 	static final String REQUEST_STATUS_CLOSED = "closed";
+	//static final String REQUEST_STATUS_ISSUED = "issued";
 //	static final LocalDate RETURN_DATE_DUMMY = LocalDate.of(2000, 1, 1);
+	
+	static final String USER_ACTIVE_STATUS = "User has active request, cannot be deleted yet.";
+	static final String EQUIPMENT_ACTIVE_STATUS = "Equipment has been issued, cannot be deleted yet.";
 	
 	static final int FINE_CUTOFF_DAYS = 7;
 	static final int FINE_LATE = 5;

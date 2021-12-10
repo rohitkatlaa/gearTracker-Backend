@@ -136,7 +136,15 @@ public class EquipmentResource {
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		repo.editEquipmentStatus(id, Constants.EQUIPMENT_STATUS_DISCARDED);
-		return Constants.SUCCESS_STATUS;
+		
+		RequestRepository req_repo = new RequestRepository();
+	 	List<Request> req_list = req_repo.getRequestsListForEquipment(id);
+	 	
+	 	for(Request req:req_list) {
+	 		if(req.getStatus().equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)) {
+	 			return Constants.EQUIPMENT_ACTIVE_STATUS;
+	 		}
+	 	}
+	 	return repo.deleteEquipment(id);
 	}
 }

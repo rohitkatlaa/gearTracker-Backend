@@ -136,6 +136,41 @@ public class RequestRepository {
 		return r;
 	}
 	
+	public List<Request> getRequestsListForEquipment(String id) {
+		List<Request> requests = new ArrayList<>();
+		String sqlQuery = "select * from requests where id_equipment = (select surrogate_id from equipment where equipment_id = '"+ id +"')";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			while(rs.next()) {
+				int request_id = rs.getInt("surrogate_id");
+				int user_surr_id = rs.getInt("id_user");
+				int equipment_surr_id = rs.getInt("id_equipment");
+				Date isd = rs.getDate("issue_date");
+				LocalDate issue_date = (LocalDate)null;
+				if(!rs.wasNull())
+				{
+					issue_date = isd.toLocalDate();
+				}
+				Date rd = rs.getDate("return_date");
+				LocalDate return_date = (LocalDate)null;
+				if(!rs.wasNull())
+				{
+					return_date = rd.toLocalDate();
+				}
+				String status = rs.getString("request_status");
+				String user_id = user_repo.getUserId(user_surr_id);
+				String equipment_id = equipment_repo.getEquipmentId(equipment_surr_id);
+				Request r = new Request(request_id, equipment_id, equipment_surr_id, user_id, user_surr_id, status, issue_date, return_date);
+				requests.add(r);
+			}
+		} catch(Exception e) {
+			System.out.println(e);
+			return null;
+		}
+		return requests;
+	}
+	
 	public void createRequest(Request r) {
 		String sqlQuery = "insert into requests (id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?)";
 		try {

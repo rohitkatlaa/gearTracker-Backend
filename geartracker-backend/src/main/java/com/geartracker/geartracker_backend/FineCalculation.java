@@ -44,6 +44,8 @@ public class FineCalculation{
 	public void computeFine(Request req){
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
+		System.out.println(req.getRequestId());
+		System.out.println(req.getStatus());
 		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
 			String eq_id = eq_repo.getEquipmentId(req.getEquipmentSurrId()); //Using surrogate ID in request, get equipment ID.
 			Equipment eq = eq_repo.getEquipmentById(eq_id); //Retrieve equipment.
@@ -54,6 +56,7 @@ public class FineCalculation{
 
 			String usr_id = usr_repo.getUserId(req.getUserSurrId());
 			User usr = usr_repo.getUserById(usr_id);
+			System.out.println(usr_id);
 		
 			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)){
 				System.out.println(daysOpen(req));
@@ -96,11 +99,13 @@ public class FineCalculation{
 	}
 	
 	public static void main(String[] args){
-
+		
+		
 		UserRepository usr_repo = new UserRepository();
 		usr_repo.getUserById("test");
 		
 		EquipmentRepository eq_repo = new EquipmentRepository();
+		//eq_repo.editEquipmentStatus("CBA1", Constants.EQUIPMENT_STATUS_LOST);
 		eq_repo.getEquipmentById("F1");
 		
 		RequestRepository req_repo = new RequestRepository();
