@@ -314,7 +314,7 @@ public class UserRepository {
 	}
 	
 	public String deleteUser(String id) {
-		String sqlQuery_delete = "DELETE from user WHERE id = '" + id +"'";
+		String sqlQuery_delete = "DELETE from user WHERE user_id = '" + id +"'";
 		try {
 			Statement st = conn.createStatement();
 			st.executeUpdate(sqlQuery_delete);
