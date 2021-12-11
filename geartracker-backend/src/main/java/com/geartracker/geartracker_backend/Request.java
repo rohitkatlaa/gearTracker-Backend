@@ -104,15 +104,16 @@ public class Request {
 		this.returnDate = returnDate;
 	}
 
-	public long dateDiff(){
-		/*if(status.equalsIgnoreCase("Issued")){
-			return DAYS.between(issueDate, LocalDate.now());
+	public long daysOpen(){
+		if(getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)){
+			return DAYS.between(getIssueDate(), LocalDate.now());
+		}
+		else if(getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_CLOSED)){
+			return DAYS.between(getIssueDate(), getReturnDate());
 		}
 		else{
-		
-			return DAYS.between(issueDate, returnDate);
-		}*/
-		return DAYS.between(issueDate, returnDate);
+			return -1;
+		}
 	}
 
 	//Didn't add email class yet and will add after APIs decided and we implement for others.

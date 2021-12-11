@@ -41,12 +41,12 @@ public abstract class FineCalculation{
 class LateFineCalculation extends FineCalculation{
 	private static LateFineCalculation fineobj = null;
 
-	/*private LateFineCalculation(){
-		this.eq_repo = EquipmentRepository.getInstance();
+	private LateFineCalculation(){
+		/*this.eq_repo = EquipmentRepository.getInstance();
 		this.req_repo = RequestRepository.getInstance();
-		this.usr_repo = UserRepository.getInstance();
+		this.usr_repo = UserRepository.getInstance();*/
 		
-	}*/
+	}
 	
 	public static LateFineCalculation getInstance() {
 		if(fineobj == null) {
@@ -54,41 +54,22 @@ class LateFineCalculation extends FineCalculation{
 		}
 		return fineobj;
 	}
-	
-	public long daysOpen(Request req){
-		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)){
-			return DAYS.between(req.getIssueDate(), LocalDate.now());
-		}
-		else if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_CLOSED)){
-			return DAYS.between(req.getIssueDate(), req.getReturnDate());
-		}
-		else{
-			return -1;
-		}
-	}
 
 	public void calc(Request req){
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
-		System.out.println(req.getRequestId());
-		System.out.println(req.getStatus());
 		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
 			//Retrieving user from database.
 			String usr_id = usr_repo.getUserId(req.getUserSurrId());
 			User usr = usr_repo.getUserById(usr_id);
 			
 			//Standard rate is 5 rupees per day overdue. If the equipment is damaged, then instead add 100 rupees.
-
-			
-			System.out.println(usr_id);
-			
-			System.out.println(daysOpen(req));
-			if(daysOpen(req) >= Constants.FINE_CUTOFF_DAYS-1) {
+			if(req.daysOpen() >= Constants.FINE_CUTOFF_DAYS-1) {
 				
 				SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_LATE_SUBJECT, Constants.MAIL_LATE_BODY + Integer.toString(usr.getFine()) + ".");
 			}
 		
-			if(daysOpen(req) > Constants.FINE_CUTOFF_DAYS){
+			if(req.daysOpen() > Constants.FINE_CUTOFF_DAYS){
 				usr.addFine(Constants.FINE_LATE);
 				usr_repo.editUser(usr_id, usr);
 			}
