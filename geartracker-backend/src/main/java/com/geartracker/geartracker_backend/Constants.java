@@ -56,7 +56,9 @@ public class Constants {
 	static final String ADMIN_ROLE = "admin";
 	static final String STUDENT_ROLE = "student";
 	static final String SPORTS_COMM_ROLE = "sportscomm";
+	static final String INSTRUCTOR_ROLE = "instructor";
 	
 	static final ArrayList<String> ALL_ROLES = new ArrayList<String>(Arrays.asList(ADMIN_ROLE, STUDENT_ROLE, SPORTS_COMM_ROLE));
-	static final ArrayList<String> SUPER_USER_ROLES = new ArrayList<String>(Arrays.asList(ADMIN_ROLE, SPORTS_COMM_ROLE));
+	static final ArrayList<String> HIGHER_USER_ROLES = new ArrayList<String>(Arrays.asList(ADMIN_ROLE, SPORTS_COMM_ROLE, INSTRUCTOR_ROLE));
+	static final ArrayList<String> SUPER_USER_ROLES = new ArrayList<String>(Arrays.asList(ADMIN_ROLE, INSTRUCTOR_ROLE));
 }

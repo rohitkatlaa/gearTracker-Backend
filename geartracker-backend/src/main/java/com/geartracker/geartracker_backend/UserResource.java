@@ -47,7 +47,7 @@ public class UserResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getUsers() {
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return user_repo.getUsersList();
 		} catch(Exception e) {

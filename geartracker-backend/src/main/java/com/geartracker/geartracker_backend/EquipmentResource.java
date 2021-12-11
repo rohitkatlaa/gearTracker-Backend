@@ -141,7 +141,7 @@ public class EquipmentResource {
 	
 	@POST
 	public Equipment createEquipment(Equipment equipment) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			equipment_repo.createEquipment(equipment);
 			return equipment;
@@ -154,7 +154,7 @@ public class EquipmentResource {
 	@PUT
 	@Path("/{id}")
 	public Equipment editEquipment(@PathParam("id") String id, Equipment equipment) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return equipment_repo.editEquipment(id, equipment);
 		} catch(Exception e) {
@@ -166,7 +166,7 @@ public class EquipmentResource {
 	@DELETE
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			RequestRepository req_repo = RequestRepository.getInstance();
 			List<Request> req_list = req_repo.getRequestsListForEquipment(id);

@@ -53,7 +53,7 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getEquipmentStatusReport(@PathParam("type") String status) {
 		//Report for discarded/lost/broken
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		if(!allowed_equipment_status.contains(status)) {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
@@ -85,7 +85,7 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getRequestCount() {
 		//Report for number of closed requests per equipment category(name)
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			List<Request> requests = request_repo.getRequestsList();
@@ -115,7 +115,7 @@ public class ReportResource {
 	@Path("/requests/aggregate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Integer getTotalCount() {
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			HashMap<String, Integer> map = getRequestCount();
 			return map.values().stream().reduce(0,Integer::sum);
@@ -130,7 +130,7 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Integer getRequestStatusReport(@PathParam("type") String status) {
 		//Report for open/issued/...
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			List<Request> requests = request_repo.getRequestsList();
 			int count = 0;
@@ -152,7 +152,7 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getEquipmentStatusReportWithinDate(@PathParam("type") String status, DatePair dPair) {
 		//Report for discarded/lost/broken
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		if(!allowed_equipment_status.contains(status)) {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
@@ -186,7 +186,7 @@ public class ReportResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getRequestCountWithinData(DatePair dPair) {
 		//Report for number of closed requests per equipment category(name)
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			LocalDate startDate = LocalDate.parse(dPair.getStartDate());
 			LocalDate endDate = LocalDate.parse(dPair.getEndDate());

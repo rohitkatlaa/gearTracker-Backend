@@ -61,7 +61,7 @@ public class RequestResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequests() {
-		authenticate(Constants.SUPER_USER_ROLES);
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return request_repo.getRequestsList();
 		} catch(Exception e) {
@@ -122,7 +122,7 @@ public class RequestResource {
 	@PUT
 	@Path("/approve/{id}")
 	public String approveRequest(@PathParam("id") int id) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+		authenticate(Constants.SUPER_USER_ROLES);
 		try {
 			Request r = request_repo.getRequestById(id);
 			String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
@@ -143,7 +143,7 @@ public class RequestResource {
 	@PUT
 	@Path("/close/{id}")
 	public String closeRequest(@PathParam("id") int id, String body) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+		authenticate(Constants.SUPER_USER_ROLES);
 		try {
 			Status s = gson.fromJson(body, Status.class);
 			Request r = request_repo.getRequestById(id);
