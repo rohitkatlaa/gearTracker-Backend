@@ -105,6 +105,7 @@ public class EquipmentRepository {
 			
 		} catch(Exception e) {
 			System.out.println(e);
+
 			return null;
 		}
 
@@ -180,17 +181,6 @@ public class EquipmentRepository {
 		try {
 			Statement st = conn.createStatement();
 			st.executeUpdate(sqlQuery);
-			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
-				
-				RequestRepository req_repo = RequestRepository.getInstance();
-				FineCalculation fineobj = FineCalculation.getInstance();
-				List<Request> req_list = req_repo.getRequestsListForEquipment(id);
-				
-				for(Request req: req_list) {
-					System.out.println("Reached edit Equip");
-					fineobj.computeFine(req);
-				}
-			}
 		}catch (Exception ex) {
 			System.out.println(ex);
 			return "failure";
@@ -199,7 +189,7 @@ public class EquipmentRepository {
 	}
 	
 	public String deleteEquipment(String id) {
-		String sqlQuery_delete = "DELETE from equipment WHERE id = '" + id +"'";
+		String sqlQuery_delete = "DELETE from equipment WHERE equipment_id = '" + id +"'";
 		try {
 			Statement st = conn.createStatement();
 			st.executeUpdate(sqlQuery_delete);
@@ -209,6 +199,13 @@ public class EquipmentRepository {
 			System.out.println(exc);
 		}
 		return Constants.FAILURE_STATUS;
+	}
+	
+	public static void main(String[] args) {
+		//System.out.println(EquipmentRepository.getInstance().deleteEquipment("BB1"));
+	
+		EquipmentRepository.getInstance().editEquipmentStatus("BB1","lost");
+		//System.out.println(EquipmentRepository.getInstance().getEquipmentById("BB1").getStatus());
 	}
 
 	public LocalDate getModifiedDate(String id) {
