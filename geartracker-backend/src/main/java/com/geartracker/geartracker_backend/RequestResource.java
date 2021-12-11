@@ -57,13 +57,29 @@ public class RequestResource {
 		}
 		throw new WebApplicationException(Response.Status.UNAUTHORIZED);
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequests() {
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return request_repo.getRequestsList();
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}	
+	}
+	
+	@GET
+	@Path("/cron")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String startCronJob() {
+		try {
+			if(!LateFineCalculation.getInstance().getRunning()) {
+				LateFineCalculation.getInstance().setRunning(true);
+				LateFineCalculation.getInstance().scheduleScan();
+			}
+			return Constants.SUCCESS_STATUS;
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
