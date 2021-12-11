@@ -15,6 +15,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.eclipse.jdt.internal.compiler.env.EnumConstantSignature;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
@@ -156,6 +159,26 @@ public class EquipmentResource {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			return equipment_repo.editEquipment(id, equipment);
+		} catch(Exception e) {
+			System.out.println(e);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
+	}
+	
+	@PUT
+	@Path("/{id}")
+	public String editEquipmentStatus(@PathParam("id") String id, String status) {
+		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
+		try {
+			String editStatus = equipment_repo.editEquipmentStatus(id, status);
+			if(editStatus.equalsIgnoreCase(Constants.SUCCESS_STATUS)) {
+				if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
+					UnusableFineCalculation.getInstance().computeFine(id);
+				}
+				return Constants.SUCCESS_STATUS;
+			}
+			return Constants.FAILURE_STATUS;
+
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);

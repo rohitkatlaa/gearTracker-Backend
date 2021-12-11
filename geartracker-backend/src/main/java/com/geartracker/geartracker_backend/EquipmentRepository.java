@@ -181,9 +181,6 @@ public class EquipmentRepository {
 		try {
 			Statement st = conn.createStatement();
 			st.executeUpdate(sqlQuery);
-			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
-				UnusableFineCalculation.getInstance().computeFine(id);
-			}
 		}catch (Exception ex) {
 			System.out.println(ex);
 			return "failure";
