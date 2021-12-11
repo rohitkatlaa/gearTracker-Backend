@@ -5,25 +5,52 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 import com.sendemail.SendMail;
 
-public class FineCalculation{
-	private EquipmentRepository eq_repo;
-	private RequestRepository req_repo;
-	private UserRepository usr_repo;
+public abstract class FineCalculation{
+	protected EquipmentRepository eq_repo = EquipmentRepository.getInstance();
+	protected RequestRepository req_repo = RequestRepository.getInstance();
+	protected UserRepository usr_repo = UserRepository.getInstance();
 	
-	private static FineCalculation fineobj = null;
+	//protected static FineCalculation fineobj = null;
+
+	public void scanRequest(List<Request> reqs){
+		for(Request req: reqs) {
+			calc(req);
+		}
+	}
 	
-	private FineCalculation(){
+	public abstract void calc(Request req);
+	//public abstract void computeFine();
+	public static void main(String[] args){
+		LateFineCalculation.getInstance().scheduleScan();
+	}
+}
+
+class LateFineCalculation extends FineCalculation{
+	private static LateFineCalculation fineobj = null;
+
+	/*private LateFineCalculation(){
 		this.eq_repo = EquipmentRepository.getInstance();
 		this.req_repo = RequestRepository.getInstance();
 		this.usr_repo = UserRepository.getInstance();
-	}
+		
+	}*/
 	
-	public static FineCalculation getInstance() {
+	public static LateFineCalculation getInstance() {
 		if(fineobj == null) {
-			fineobj = new FineCalculation();
+			fineobj = new LateFineCalculation();
 		}
 		return fineobj;
 	}
@@ -40,64 +67,87 @@ public class FineCalculation{
 		}
 	}
 
-	public void computeFine(Request req){
+	public void calc(Request req){
 		//Retrieving equipment from database.
 		//EquipmentRepository eq_repo = new EquipmentRepository();
 		System.out.println(req.getRequestId());
 		System.out.println(req.getStatus());
 		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
-			String eq_id = eq_repo.getEquipmentId(req.getEquipmentSurrId()); //Using surrogate ID in request, get equipment ID.
-			Equipment eq = eq_repo.getEquipmentById(eq_id); //Retrieve equipment.
-			String status = eq.getStatus();
-
 			//Retrieving user from database.
-			//Standard rate is 5 rupees per day overdue. If the equipment is damaged, then instead add 100 rupees.
-
 			String usr_id = usr_repo.getUserId(req.getUserSurrId());
 			User usr = usr_repo.getUserById(usr_id);
-			System.out.println(usr_id);
-		
-			if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_ISSUED)){
-				System.out.println(daysOpen(req));
-				if(daysOpen(req) >= Constants.FINE_CUTOFF_DAYS-1) {
-					
-					SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_LATE_SUBJECT, Constants.MAIL_LATE_BODY + Integer.toString(usr.getFine()) + ".");
-				}
 			
-				if(daysOpen(req) > Constants.FINE_CUTOFF_DAYS){
-					usr.addFine(Constants.FINE_LATE);
-					usr_repo.editUser(usr_id, usr);
-				}
+			//Standard rate is 5 rupees per day overdue. If the equipment is damaged, then instead add 100 rupees.
+
+			
+			System.out.println(usr_id);
+			
+			System.out.println(daysOpen(req));
+			if(daysOpen(req) >= Constants.FINE_CUTOFF_DAYS-1) {
+				
+				SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_LATE_SUBJECT, Constants.MAIL_LATE_BODY + Integer.toString(usr.getFine()) + ".");
+			}
+		
+			if(daysOpen(req) > Constants.FINE_CUTOFF_DAYS){
+				usr.addFine(Constants.FINE_LATE);
+				usr_repo.editUser(usr_id, usr);
 			}
 
-			else if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)){			//To represent when equipment is lost or broken.
-				usr.addFine(Constants.FINE_DEFECTIVE);
-				usr_repo.editUser(usr_id, usr);
-				SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_DAMAGE_SUBJECT, Constants.MAIL_DAMAGE_BODY + Integer.toString(usr.getFine()) + ".");
-				
-				//Make change in database now. Use the req ID of this request, search in database and close request.
-				req.setStatus(Constants.REQUEST_STATUS_CLOSED);
-				req_repo.editRequest(req.getRequestId(), req);
-			}
 		}
 	}
 	
-	public void scanRequest() {
-		for(Request req:req_repo.getRequestsList()) {
-			computeFine(req);
-		}
+	public void computeFine() {
+		scanRequest(req_repo.getRequestsList());
 	}
 	
 	public void scheduleScan(){
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		//Call function on each request from the request table.
-		Runnable scanner = () -> scanRequest();
+		Runnable scanner = () -> computeFine();
 		ScheduledFuture<?> scanHandle = scheduler.scheduleAtFixedRate(scanner, Constants.SCAN_INITIAL_DELAY, Constants.SCAN_PERIOD, Constants.SCAN_TIMEUNIT);
 		Runnable canceller = () -> scanHandle.cancel(false);
 		scheduler.schedule(canceller, Constants.SCAN_DURATION, Constants.SCAN_DURATIONUNIT);
 	}
 	
-	public static void main(String[] args){
-		FineCalculation.getInstance().scheduleScan();
+}
+
+
+class UnusableFineCalculation extends FineCalculation{	
+	private static UnusableFineCalculation fineobj = null;
+
+	private UnusableFineCalculation(){
+		this.eq_repo = EquipmentRepository.getInstance();
+		this.req_repo = RequestRepository.getInstance();
+		this.usr_repo = UserRepository.getInstance();		
+	}
+	
+	public static UnusableFineCalculation getInstance() {
+		if(fineobj == null) {
+			fineobj = new UnusableFineCalculation();
+		}
+		return fineobj;
+	}
+	
+	public void calc(Request req){
+		if(req.getStatus().equalsIgnoreCase(Constants.REQUEST_STATUS_APPROVED)) {
+			String usr_id = usr_repo.getUserId(req.getUserSurrId());
+			User usr = usr_repo.getUserById(usr_id);
+			
+			usr.addFine(Constants.FINE_DEFECTIVE);
+			usr_repo.editUser(usr_id, usr);
+			SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_DAMAGE_SUBJECT, Constants.MAIL_DAMAGE_BODY + Integer.toString(usr.getFine()) + ".");
+		
+		//Make change in database now. Use the req ID of this request, search in database and close request.
+			req.setStatus(Constants.REQUEST_STATUS_CLOSED);
+			req_repo.editRequest(req.getRequestId(), req);
+		}
+	}
+	
+	public void computeFine(String id){
+		scanRequest(req_repo.getRequestsListForEquipment(id));
 	}
 }
+	
+	
+	
+	
