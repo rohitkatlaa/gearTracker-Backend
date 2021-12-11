@@ -23,8 +23,6 @@ public abstract class FineCalculation{
 	protected RequestRepository req_repo = RequestRepository.getInstance();
 	protected UserRepository usr_repo = UserRepository.getInstance();
 	
-	//protected static FineCalculation fineobj = null;
-
 	public void scanRequest(List<Request> reqs){
 		for(Request req: reqs) {
 			calc(req);
@@ -40,12 +38,10 @@ public abstract class FineCalculation{
 
 class LateFineCalculation extends FineCalculation{
 	private static LateFineCalculation fineobj = null;
-
+	private boolean running = false;
+	
 	private LateFineCalculation(){
-		/*this.eq_repo = EquipmentRepository.getInstance();
-		this.req_repo = RequestRepository.getInstance();
-		this.usr_repo = UserRepository.getInstance();*/
-		
+		running = true;
 	}
 	
 	public static LateFineCalculation getInstance() {
@@ -53,6 +49,14 @@ class LateFineCalculation extends FineCalculation{
 			fineobj = new LateFineCalculation();
 		}
 		return fineobj;
+	}
+	
+	public boolean getRunning() {
+		return running;
+	}
+	
+	public void setRunning(boolean newState) {
+		running = newState;
 	}
 
 	public void calc(Request req){
