@@ -1,6 +1,3 @@
-//Code for sending mail taken from https://netcorecloud.com/tutorials/send-email-in-java-using-gmail-smtp/
-//And modified for our purposes.
-
 package com.sendemail;
 
 import java.util.Properties;
@@ -16,33 +13,21 @@ import javax.mail.internet.MimeMessage;
 public class SendMail {
 	
 	public static void sendmail(String to_address, String from_address, String password,String subject, String body){
-		//Recipient's email ID needs to be mentioned.
-        //String to = "Hemanth.Chitti@iiitb.ac.in";
-
-        // Sender's email ID needs to be mentioned
-        //String from = "geartrackertesting486@gmail.com";
-//
-//        // Assuming you are sending email from through gmails smtp
+        // Assuming you are sending email from through gmails smtp
         String host = "smtp.gmail.com";
-//
-//        // Get system properties
+        // Get system properties
         Properties properties = System.getProperties();
-//
-//        // Setup mail server
+        // Setup mail server
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", "465");
         properties.put("mail.smtp.ssl.enable", "true");
         properties.put("mail.smtp.auth", "true");
 
-        // Get the Session object.// and pass username and password
+        // Get the Session object and pass username and password
         Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-
             protected PasswordAuthentication getPasswordAuthentication() {
-
-                //return new PasswordAuthentication("geartrackertesting486@gmail.com", "geartrackertesting684");
             	return new PasswordAuthentication(from_address, password);
             }
-
         });
 
         // Used to debug SMTP issues
@@ -60,10 +45,8 @@ public class SendMail {
 
             // Set Subject: header field
             message.setSubject(subject);
-            //message.setSubject("Demo using Gmail SMTP");
 
             // Now set the actual message
-            //message.setText("This has been sent using Gmail SMTP client.");
             message.setText(body);
             
             System.out.println("sending...");

@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Constants {
+	/*
+		Global Constants that is used through the entire backend project.
+	*/
+
 	static final String SQL_URL =  "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
 	static final String SQL_USERNAME = "root";
 	static final String SQL_PASSWORD = "narrativearc";
@@ -32,8 +36,6 @@ public class Constants {
 	static final String REQUEST_STATUS_OPEN = "open";
 	static final String REQUEST_STATUS_APPROVED = "approved";
 	static final String REQUEST_STATUS_CLOSED = "closed";
-	//static final String REQUEST_STATUS_ISSUED = "issued";
-//	static final LocalDate RETURN_DATE_DUMMY = LocalDate.of(2000, 1, 1);
 	
 	static final String USER_ACTIVE_STATUS = "User has active request, cannot be deleted yet.";
 	static final String EQUIPMENT_ACTIVE_STATUS = "Equipment has been issued, cannot be deleted yet.";

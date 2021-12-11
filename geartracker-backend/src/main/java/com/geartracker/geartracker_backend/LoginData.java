@@ -1,6 +1,9 @@
 package com.geartracker.geartracker_backend;
 
 public class LoginData {
+	/*
+		Class that is used to represent the data required for login.
+	*/
 	private String id;
 	private String password;
 	

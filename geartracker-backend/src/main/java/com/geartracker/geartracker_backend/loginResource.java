@@ -14,7 +14,9 @@ import com.google.gson.Gson;
 
 @Path("login")
 public class loginResource {
-
+	/*
+		Class that provides the APIs for Login.
+	*/	
 	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson(); 
 

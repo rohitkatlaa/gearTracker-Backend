@@ -20,7 +20,9 @@ import javax.ws.rs.core.Response;
 
 @Path("report")
 public class ReportResource {
-	
+	/*
+		Class that provides the APIs for Reports.
+	*/	
 	RequestRepository request_repo = RequestRepository.getInstance();
 	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
 	UserRepository user_repo = UserRepository.getInstance();
@@ -157,8 +159,8 @@ public class ReportResource {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
 		try {
-			LocalDate startDate = LocalDate.parse(dPair.getStartDate());
-			LocalDate endDate = LocalDate.parse(dPair.getEndDate());
+			LocalDate startDate = Utils.string_to_date(dPair.getStartDate());
+			LocalDate endDate = Utils.string_to_date(dPair.getEndDate());
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			List<Equipment> equipments = equipment_repo.getEquipmentsList();
 			for(Equipment e: equipments) {
@@ -188,8 +190,8 @@ public class ReportResource {
 		//Report for number of closed requests per equipment category(name)
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
-			LocalDate startDate = LocalDate.parse(dPair.getStartDate());
-			LocalDate endDate = LocalDate.parse(dPair.getEndDate());
+			LocalDate startDate = Utils.string_to_date(dPair.getStartDate());
+			LocalDate endDate = Utils.string_to_date(dPair.getEndDate());
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			List<Request> requests = request_repo.getRequestsList();
 			for(Request r: requests) {

@@ -5,6 +5,9 @@ import java.util.List;
 import java.sql.*;
 
 public class UserRepository {
+	/* 
+		Class that is used to interact with the Equipment table in the SQL database.
+	*/
 	private Connection conn = null;
 	private static UserRepository repo = null; 
 
@@ -16,7 +19,6 @@ public class UserRepository {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
 		} catch(Exception e) {
-			System.out.println("hello");
 			System.out.println(e);
 		}
 
@@ -269,7 +271,6 @@ public class UserRepository {
 				String sqlQuery2 = "update student SET fine=?,sports_team=? where surrogate_id = "+ newU.getStudent();
 				PreparedStatement st2 = conn.prepareStatement(sqlQuery2);
 				st2.setInt(1, newU.getFine());
-				System.out.println(newU.getSportsStatus());
 				if(newU.getSportsStatus())
 					st2.setInt(2, 1);
 				else
@@ -294,7 +295,6 @@ public class UserRepository {
 				if(!new_roles.contains(e))
 				{
 					String sqlDel = "delete from user_role where id_user = "+ _id + " AND role = '" + e + "'";
-					System.out.println("I was deleting "+ sqlDel);
 					st3.executeUpdate(sqlDel);
 				}
 			}
@@ -302,7 +302,6 @@ public class UserRepository {
 				if(!old_roles.contains(e))
 				{
 					String sqlAdd = "insert into user_role (id_user, role) values ("+_id+",'"+ e +"')";
-					System.out.println("I was inserting "+ sqlAdd);
 					st3.executeUpdate(sqlAdd);
 				}
 			}

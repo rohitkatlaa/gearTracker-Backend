@@ -3,6 +3,9 @@ import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Request {
+	/*
+		Class that used to represent an request.
+	*/
 	private int requestId;
 	private String equipmentId;
 	private int equipmentSurrId;
@@ -12,12 +15,12 @@ public class Request {
 	private LocalDate issueDate;
 	private LocalDate returnDate = null;
 	
-//	Default constructor is needed for jersey POST request.
+	// Default constructor is needed for jersey POST request.
 	public Request() {
 		
 	}
 
-//	This constructor is used when request id is not needed(When creating a new request). 
+	// This constructor is used when request id is not needed(When creating a new request). 
 	public Request(String equipmentId, int equipmentSurrId, String userId, int userSurrId, String status, LocalDate issueDate, LocalDate returnDate) {
 		this.equipmentSurrId = equipmentSurrId;
 		this.userSurrId = userSurrId;
@@ -39,7 +42,6 @@ public class Request {
 		this.returnDate = returnDate;
 	}
 
-	// Getter and setter functions. Can be modified or dropped if unnecessary
 	public int getRequestId() {
 		return requestId;
 	}
@@ -115,15 +117,4 @@ public class Request {
 			return -1;
 		}
 	}
-
-	//Didn't add email class yet and will add after APIs decided and we implement for others.
-//	public static void main(String[] args){
-//		Request req = new Request();
-//		req.setIssueDate(LocalDate.now());
-//		req.setStatus
-//		req.setReturnDate(req.getIssueDate().plusDays(10));
-//		System.out.println(req.dateDiff());
-//		//User user1 = new User("x1","Hemanth", "password", "email@gmail.com");
-//		//System.out.println(user1.getName() + " " + user1.getId() + " " + user1.getPassword() + " " + user1.getEmail());
-//	}
 }

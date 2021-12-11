@@ -7,7 +7,9 @@ import java.sql.*;
 import java.time.LocalDate;
 
 public class RequestRepository {
-
+	/* 
+		Class that is used to interact with the Requests table in the SQL database.
+	*/
 	List<Request> requests = new ArrayList<>();
 	Connection conn = null;
 	public static HashMap<String, Integer> stats_issue = new HashMap<>();
@@ -53,7 +55,6 @@ public class RequestRepository {
 				}
 				Date rd = rs.getDate("return_date");
 				LocalDate return_date = (LocalDate)null;
-//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -81,7 +82,6 @@ public class RequestRepository {
 				int request_id = rs.getInt("surrogate_id");
 				int user_surr_id = rs.getInt("id_user");
 				int equipment_surr_id = rs.getInt("id_equipment");
-//				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date isd = rs.getDate("issue_date");
 				LocalDate issue_date = (LocalDate)null;
 				if(!rs.wasNull())
@@ -90,7 +90,6 @@ public class RequestRepository {
 				}
 				Date rd = rs.getDate("return_date");
 				LocalDate return_date = (LocalDate)null;
-//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -126,7 +125,6 @@ public class RequestRepository {
 				}
 				Date rd = rs.getDate("return_date");
 				LocalDate return_date = (LocalDate)null;
-//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -184,7 +182,6 @@ public class RequestRepository {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 			st.setInt(1,r.getUserSurrId());
 			st.setInt(2, r.getEquipmentSurrId());
-//			st.setDate(3, Date.valueOf(r.getIssueDate()));
 			if(r.getIssueDate()==null) {
 				st.setNull(3, Types.DATE);
 			}
@@ -211,7 +208,6 @@ public class RequestRepository {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 		    st.setInt(1, newR.getUserSurrId());
 		    st.setInt(2, newR.getEquipmentSurrId());
-//		    st.setDate(3, Date.valueOf(newR.getIssueDate()));
 		    if(newR.getIssueDate()==null) {
 				st.setNull(3, Types.DATE);
 			}

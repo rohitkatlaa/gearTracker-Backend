@@ -2,7 +2,6 @@ package com.geartracker.geartracker_backend;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -33,7 +32,9 @@ class Status {
 
 @Path("requests")
 public class RequestResource {
-	
+	/*
+		Class that provides the APIs for Requests.
+	*/	
 	RequestRepository request_repo = RequestRepository.getInstance();
 	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
 	UserRepository user_repo = UserRepository.getInstance();

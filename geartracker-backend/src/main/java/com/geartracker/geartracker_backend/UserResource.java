@@ -21,7 +21,9 @@ import javax.ws.rs.core.Response;
 
 @Path("users")
 public class UserResource {
-	
+	/*
+		Class that provides the APIs for Users.
+	*/	
 	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson();
 	

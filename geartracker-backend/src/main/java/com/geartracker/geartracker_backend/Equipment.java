@@ -1,17 +1,16 @@
 package com.geartracker.geartracker_backend;
 
-//import javax.xml.bind.annotation.XmlRootElement;
-
-
-public class Equipment {	
+public class Equipment {
+	/*
+		Class that used to represent an equipment.
+	*/
 	private String id;
 	private String name;
 	private String status;
 	private boolean reserved;
 	private String description;
-	
 
-//	Default constructor is needed for jersey POST request.
+	// Default constructor is needed for jersey POST request.
 	public Equipment() {
 		
 	}

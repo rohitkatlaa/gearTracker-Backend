@@ -2,7 +2,6 @@ package com.geartracker.geartracker_backend;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -35,7 +34,9 @@ class UserId {
 
 @Path("equipments")
 public class EquipmentResource {
-	
+	/*
+		Class that provides the APIs for Equipments.
+	*/	
 	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();
 	UserRepository user_repo = UserRepository.getInstance();
 	RequestRepository request_repo = RequestRepository.getInstance();

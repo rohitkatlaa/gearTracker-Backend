@@ -6,6 +6,9 @@ import java.util.List;
 import java.sql.*;
 
 public class EquipmentRepository {
+	/* 
+		Class that is used to interact with the Equipment table in the SQL database.
+	*/
 	private Connection conn = null;
 	private static EquipmentRepository repo = null;
 	
@@ -17,7 +20,6 @@ public class EquipmentRepository {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
 		} catch(Exception e) {
-			System.out.println("hello");
 			System.out.println(e);
 		}
 		
@@ -201,13 +203,6 @@ public class EquipmentRepository {
 		return Constants.FAILURE_STATUS;
 	}
 	
-	public static void main(String[] args) {
-		//System.out.println(EquipmentRepository.getInstance().deleteEquipment("BB1"));
-	
-		EquipmentRepository.getInstance().editEquipmentStatus("BB1","lost");
-		//System.out.println(EquipmentRepository.getInstance().getEquipmentById("BB1").getStatus());
-	}
-
 	public LocalDate getModifiedDate(String id) {
 		String sqlQuery = "select updated_at from equipment where equipment_id = '" + id + "'";
 		try {

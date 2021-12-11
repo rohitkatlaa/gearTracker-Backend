@@ -2,7 +2,10 @@ package com.geartracker.geartracker_backend;
 
 import com.sendemail.SendMail;
 
-public class UnusableFineCalculation extends FineCalculation{	
+public class UnusableFineCalculation extends FineCalculation {
+	/*
+		Class that implements the fine calculation for the equipment that has not been reported as lost or broken.
+	*/
 	private static UnusableFineCalculation fineobj = null;
 
 	private UnusableFineCalculation(){
