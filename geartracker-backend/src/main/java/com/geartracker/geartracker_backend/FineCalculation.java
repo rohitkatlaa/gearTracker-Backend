@@ -118,9 +118,6 @@ class UnusableFineCalculation extends FineCalculation{
 			usr_repo.editUser(usr_id, usr);
 			SendMail.sendmail(usr.getEmail(), Constants.MAIL_USERNAME, Constants.MAIL_PASSWORD, Constants.MAIL_DAMAGE_SUBJECT, Constants.MAIL_DAMAGE_BODY + Integer.toString(usr.getFine()) + ".");
 		
-		//Make change in database now. Use the req ID of this request, search in database and close request.
-			req.setStatus(Constants.REQUEST_STATUS_CLOSED);
-			req_repo.editRequest(req.getRequestId(), req);
 		}
 	}
 	

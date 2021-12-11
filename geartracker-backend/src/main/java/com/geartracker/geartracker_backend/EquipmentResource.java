@@ -165,26 +165,6 @@ public class EquipmentResource {
 		}
 	}
 	
-	@PUT
-	@Path("/{id}")
-	public String editEquipmentStatus(@PathParam("id") String id, String status) {
-		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
-		try {
-			String editStatus = equipment_repo.editEquipmentStatus(id, status);
-			if(editStatus.equalsIgnoreCase(Constants.SUCCESS_STATUS)) {
-				if(status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_LOST) || status.equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
-					UnusableFineCalculation.getInstance().computeFine(id);
-				}
-				return Constants.SUCCESS_STATUS;
-			}
-			return Constants.FAILURE_STATUS;
-
-		} catch(Exception e) {
-			System.out.println(e);
-			throw new WebApplicationException(Response.Status.BAD_REQUEST);
-		}
-	}
-	
 	@DELETE
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) {
