@@ -24,7 +24,6 @@ public class RequestRepository {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
 		} catch(Exception e) {
-			System.out.println("hello");
 			System.out.println(e);
 		}	
 	}
@@ -270,5 +269,21 @@ public class RequestRepository {
 			return Constants.FAILURE_STATUS;
 		}
 		return Constants.SUCCESS_STATUS;
+	}
+
+	public LocalDate getModifiedDate(int id) {
+		String sqlQuery = "select updated_at from requests where surrogate_id = " + id;
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				Date date = new Date(rs.getTimestamp("updated_at").getTime());
+				return date.toLocalDate();
+			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return null;
 	}
 }
