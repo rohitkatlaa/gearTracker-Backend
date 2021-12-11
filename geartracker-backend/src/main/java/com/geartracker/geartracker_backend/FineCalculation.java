@@ -41,12 +41,12 @@ public abstract class FineCalculation{
 class LateFineCalculation extends FineCalculation{
 	private static LateFineCalculation fineobj = null;
 
-	/*private LateFineCalculation(){
-		this.eq_repo = EquipmentRepository.getInstance();
+	private LateFineCalculation(){
+		/*this.eq_repo = EquipmentRepository.getInstance();
 		this.req_repo = RequestRepository.getInstance();
-		this.usr_repo = UserRepository.getInstance();
+		this.usr_repo = UserRepository.getInstance();*/
 		
-	}*/
+	}
 	
 	public static LateFineCalculation getInstance() {
 		if(fineobj == null) {
