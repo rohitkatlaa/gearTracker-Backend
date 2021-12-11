@@ -1,5 +1,6 @@
 package com.geartracker.geartracker_backend;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
@@ -208,5 +209,21 @@ public class EquipmentRepository {
 	
 		EquipmentRepository.getInstance().editEquipmentStatus("BB1","lost");
 		//System.out.println(EquipmentRepository.getInstance().getEquipmentById("BB1").getStatus());
+	}
+
+	public LocalDate getModifiedDate(String id) {
+		String sqlQuery = "select updated_at from equipment where equipment_id = '" + id + "'";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			if(rs.next()) {
+				Date date = new Date(rs.getTimestamp("updated_at").getTime());
+				return date.toLocalDate();
+			}
+			
+		} catch(Exception exc) {
+			System.out.println(exc);
+		}
+		return null;
 	}
 }
