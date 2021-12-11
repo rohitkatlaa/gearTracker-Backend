@@ -312,11 +312,19 @@ public class UserRepository {
 		return getUserById(newU.getId()); 
 	}
 	
-	public String deleteUser(String id) {
-		String sqlQuery_delete = "DELETE from user WHERE user_id = '" + id +"'";
+	public String deleteUser(User u,String id) {
 		try {
 			Statement st = conn.createStatement();
-			st.executeUpdate(sqlQuery_delete);
+			String sqlQuery = "";
+			if(u.getRoles().contains("student"))
+			{
+				sqlQuery= "DELETE from student WHERE surrogate_id = "+ u.getStudent();
+			}
+			else
+			{
+				sqlQuery= "DELETE from user WHERE user_id = '" + id +"'";
+			}
+			st.executeUpdate(sqlQuery);
 			return Constants.SUCCESS_STATUS;
 			
 		} catch(Exception exc) {
@@ -324,6 +332,7 @@ public class UserRepository {
 		}
 		return Constants.FAILURE_STATUS;
 	}
+
 
 }
 

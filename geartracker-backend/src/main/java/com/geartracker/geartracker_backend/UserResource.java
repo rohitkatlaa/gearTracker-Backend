@@ -109,7 +109,8 @@ public class UserResource {
 	 			return Constants.USER_ACTIVE_STATUS;
 	 		}
 	 	}
-	 	return user_repo.deleteUser(id);
+	 	User u = user_repo.getUserById(id);
+	 	return user_repo.deleteUser(u, id);
 	}
 	
 }
