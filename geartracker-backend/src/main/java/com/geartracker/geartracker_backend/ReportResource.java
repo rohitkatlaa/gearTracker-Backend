@@ -164,7 +164,7 @@ public class ReportResource {
 			for(Equipment e: equipments) {
 				if(e.getStatus().equals(status)) {
 					LocalDate mDate = equipment_repo.getModifiedDate(e.getId());
-					if(startDate.isBefore(mDate) && endDate.isAfter(mDate)) {
+					if((startDate.isBefore(mDate) && endDate.isAfter(mDate)) || startDate.equals(mDate) || endDate.equals(mDate)) {
 						String key = e.getName();
 						if (map.containsKey(key)) {
 							map.put(key, map.get(key)+1);
@@ -195,7 +195,7 @@ public class ReportResource {
 			for(Request r: requests) {
 				if(r.getStatus().equals(Constants.REQUEST_STATUS_CLOSED)) {
 					LocalDate mDate = request_repo.getModifiedDate(r.getRequestId());
-					if(startDate.isBefore(mDate) && endDate.isAfter(mDate)) {
+					if((startDate.isBefore(mDate) && endDate.isAfter(mDate)) || startDate.equals(mDate) || endDate.equals(mDate)) {
 						String e_id = equipment_repo.getEquipmentId(r.getEquipmentSurrId());
 						Equipment e = equipment_repo.getEquipmentById(e_id);
 						String key = e.getName();
