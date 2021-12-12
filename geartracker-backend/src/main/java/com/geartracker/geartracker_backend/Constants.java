@@ -18,7 +18,7 @@ public class Constants {
 	static final String MAIL_LATE_SUBJECT = "Reminder to return equipment";
 	static final String MAIL_LATE_BODY = "Please return equipment possessed by you. Your current fine is ";
 	static final String MAIL_DAMAGE_SUBJECT = "Fine for damaging equipment";
-	static final String MAIL_DAMAGE_BODY = "Your act of making our equipment unusable is unforgivable. Don't repeat this. Your current fine is ";
+	static final String MAIL_DAMAGE_BODY = "You have been fined 100 for making our equipment unusable. Your current fine is ";
 	
 	static final int SCAN_INITIAL_DELAY = 1;
 	static final int SCAN_PERIOD = 5; // Assuming in seconds. 
