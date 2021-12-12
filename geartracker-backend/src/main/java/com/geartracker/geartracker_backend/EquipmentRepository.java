@@ -177,18 +177,17 @@ public class EquipmentRepository {
 		Function to edit an equipment in the database.
 	*/
 	public Equipment editEquipment(String id, Equipment newE) {
-		String sqlQuery = "UPDATE equipment SET equipment_id=?,equipment_category=?,sports_team=?,equipment_status=?,equipment_description=? WHERE equipment_id = '" + id + "'";
+		String sqlQuery = "UPDATE equipment SET equipment_category=?,sports_team=?,equipment_status=?,equipment_description=? WHERE equipment_id = '" + id + "'";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
-			st.setString(1, newE.getId());
-		    st.setString(2, newE.getName());
-		    st.setString(4, newE.getStatus());
-		    st.setString(5, newE.getDescription());
+		    st.setString(1, newE.getName());
+		    st.setString(3, newE.getStatus());
+		    st.setString(4, newE.getDescription());
 		    boolean reserved = newE.isReserved();
 		    if(reserved==false)
-				st.setInt(3, 0);
+				st.setInt(2, 0);
 			else
-				st.setInt(3, 1);
+				st.setInt(2, 1);
 		    st.executeUpdate();
 		                                                             
 		}catch (Exception ex) {

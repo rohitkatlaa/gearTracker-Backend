@@ -2,7 +2,6 @@ package com.geartracker.geartracker_backend;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -12,7 +11,6 @@ public class RequestRepository {
 	*/
 	List<Request> requests = new ArrayList<>();
 	Connection conn = null;
-	public static HashMap<String, Integer> stats_issue = new HashMap<>();
 	private static RequestRepository repo = null;
 	
 	EquipmentRepository equipment_repo = EquipmentRepository.getInstance();

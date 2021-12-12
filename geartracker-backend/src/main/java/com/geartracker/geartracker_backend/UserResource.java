@@ -90,7 +90,7 @@ public class UserResource {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
-			if(user_repo.getUserById(e.getId())==null) {
+			if(user_repo.getUserById(e.getId()).getId()==null) {
 				User u = user_repo.createUser(e);
 				return u;
 			} else {
