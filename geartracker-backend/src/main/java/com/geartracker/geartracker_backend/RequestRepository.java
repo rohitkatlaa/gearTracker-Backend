@@ -37,6 +37,9 @@ public class RequestRepository {
 		return repo;
 	}
 	
+	/*
+		Function to fetch the list of requests from the database.
+	*/
 	public List<Request> getRequestsList() {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests";
@@ -72,6 +75,9 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	/*
+		Function to fetch the list of requests of a student from the database.
+	*/
 	public List<Request> getRequestsListForStudent(String id) {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests where id_user = (select surrogate_id from user where user_id = '"+ id +"')";
@@ -107,6 +113,9 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	/*
+		Function to fetch the request from the id from the database.
+	*/
 	public Request getRequestById(int id) {
 		String sqlQuery = "select * from requests where surrogate_id = '" + id + "'";
 		Request r = null;
@@ -141,6 +150,9 @@ public class RequestRepository {
 		return r;
 	}
 	
+	/*
+		Function to fetch the list of requests for an equipment from the database.
+	*/
 	public List<Request> getRequestsListForEquipment(String id) {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests where id_equipment = (select surrogate_id from equipment where equipment_id = '"+ id +"')";
@@ -176,6 +188,9 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	/*
+		Function to create an request in the database.
+	*/
 	public void createRequest(Request r) {
 		String sqlQuery = "insert into requests (id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?)";
 		try {
@@ -202,6 +217,9 @@ public class RequestRepository {
 		}
 	}
 	
+	/*
+		Function to edit an request in the database.
+	*/
 	public Request editRequest(int id, Request newR) {
 		String sqlQuery = "UPDATE requests SET id_user=?,id_equipment=?,issue_date=?,return_date=?,request_status=? WHERE surrogate_id = " + id;
 		try {
@@ -229,6 +247,9 @@ public class RequestRepository {
 		return newR;
 	}
 
+	/*
+		Function to edit the status of an request in the database.
+	*/
 	public String editRequestStatus(int id, String status) {
 		String sqlQuery = "UPDATE requests SET request_status= '" + status + "' WHERE surrogate_id = " + id;
 		try {
@@ -241,6 +262,9 @@ public class RequestRepository {
 		return Constants.SUCCESS_STATUS;
 	}
 	
+	/*
+		Function to edit the issued date of an request in the database.
+	*/
 	public String setRequestIssueDate(int id, LocalDate issue_date) {
 		String sqlQuery = "UPDATE requests SET issue_date= ? WHERE surrogate_id = " + id;
 		try {
@@ -254,6 +278,9 @@ public class RequestRepository {
 		return Constants.SUCCESS_STATUS;
 	}
 	
+	/*
+		Function to edit the return date of an request in the database.
+	*/
 	public String setRequestReturnDate(int id, LocalDate return_date) {
 		String sqlQuery = "UPDATE requests SET return_date= ? WHERE surrogate_id = " + id;
 		try {
@@ -267,6 +294,9 @@ public class RequestRepository {
 		return Constants.SUCCESS_STATUS;
 	}
 
+	/*
+		Function to fetch the last modified date of an request from the database.
+	*/
 	public LocalDate getModifiedDate(int id) {
 		String sqlQuery = "select updated_at from requests where surrogate_id = " + id;
 		try {

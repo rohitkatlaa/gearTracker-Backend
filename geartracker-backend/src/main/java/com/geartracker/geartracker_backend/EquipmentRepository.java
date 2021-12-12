@@ -32,6 +32,9 @@ public class EquipmentRepository {
 		return repo;
 	}
 	
+	/*
+		Function to fetch the equipment id from its surrogate id.
+	*/
 	public String getEquipmentId(int id) {
 		String sqlQuery = "select equipment_id from equipment where surrogate_id = '" + id + "'";
 		try {
@@ -48,6 +51,9 @@ public class EquipmentRepository {
 		return Constants.FAILURE_STATUS;
 	}
 	
+	/*
+		Function to fetch the surrogate id from its equipment id.
+	*/
 	public int getSurrogateId(String id) {
 		String sqlQuery = "select surrogate_id from equipment where equipment_id = '" + id + "'";
 		try {
@@ -64,6 +70,9 @@ public class EquipmentRepository {
 		return Constants.ERROR_STATUS;
 	}
 	
+	/*
+		Function to fetch the list of equipments from the database.
+	*/
 	public List<Equipment> getEquipmentsList() {
 		List<Equipment> equipments = new ArrayList<>();
 		String sqlQuery = "select * from equipment";
@@ -87,8 +96,10 @@ public class EquipmentRepository {
 		return equipments;
 	}
 
-	
-	public List<Equipment> getAvailableEquipment() //Return List of equipments filtered by availability
+	/*
+		Function to fetch the list of equipments filtered by availability from the database.
+	*/
+	public List<Equipment> getAvailableEquipment()
 	{
 		List<Equipment> equipments = new ArrayList<>();
 		String sqlQuery = "select * from equipment where equipment_status = 'available'";
@@ -114,6 +125,9 @@ public class EquipmentRepository {
 		return equipments;
 	}
 	
+	/*
+		Function to fetch the equipment from the equipment_id from the database.
+	*/
 	public Equipment getEquipmentById(String id) {
 		String sqlQuery = "select * from equipment where equipment_id = '" + id + "'";
 		Equipment e = null;
@@ -136,6 +150,9 @@ public class EquipmentRepository {
 		return e;
 	}
 	
+	/*
+		Function to create an equipment in the database.
+	*/
 	public void createEquipment(Equipment e) {
 		String sqlQuery = "insert into equipment (equipment_id,equipment_category,sports_team,equipment_status,equipment_description) values (?,?,?,?,?)";
 		try {
@@ -156,6 +173,9 @@ public class EquipmentRepository {
 		}
 	}
 	
+	/*
+		Function to edit an equipment in the database.
+	*/
 	public Equipment editEquipment(String id, Equipment newE) {
 		String sqlQuery = "UPDATE equipment SET equipment_id=?,equipment_category=?,sports_team=?,equipment_status=?,equipment_description=? WHERE equipment_id = '" + id + "'";
 		try {
@@ -177,6 +197,9 @@ public class EquipmentRepository {
 		return newE;
 	}
 
+	/*
+		Function to edit the status of an equipment in the database.
+	*/
 	public String editEquipmentStatus(String id, String status)  //Change status if open and return success else return failure
 	{
 		String sqlQuery = "UPDATE equipment SET equipment_status= '" + status + "' WHERE equipment_id = '" + id + "'";
@@ -190,6 +213,9 @@ public class EquipmentRepository {
 		return "success";
 	}
 	
+	/*
+		Function to delete an equipment from the database.
+	*/
 	public String deleteEquipment(String id) {
 		String sqlQuery_delete = "DELETE from equipment WHERE equipment_id = '" + id +"'";
 		try {
@@ -203,6 +229,9 @@ public class EquipmentRepository {
 		return Constants.FAILURE_STATUS;
 	}
 	
+	/*
+		Function to fetch the last modified date of an equipment from the database.
+	*/
 	public LocalDate getModifiedDate(String id) {
 		String sqlQuery = "select updated_at from equipment where equipment_id = '" + id + "'";
 		try {

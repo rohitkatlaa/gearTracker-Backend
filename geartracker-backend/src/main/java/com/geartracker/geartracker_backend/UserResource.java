@@ -31,6 +31,9 @@ public class UserResource {
 	private HttpHeaders httpHeaders;
 	
 	private void authenticate(ArrayList<String> roles) {
+		/*
+			Funtion to authenticate based on roles.
+		*/
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
@@ -49,6 +52,10 @@ public class UserResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getUsers() {
+		/*
+			API: GET - /webapi/users
+			API to fetch the list of users.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return user_repo.getUsersList();
@@ -61,6 +68,10 @@ public class UserResource {
 	@GET
 	@Path("/{id}")
 	public User getUser(@PathParam("id") String id) {
+		/*
+			API: GET - /webapi/users/{id}
+			API to fetch the user from the id.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return user_repo.getUserById(id);
@@ -72,6 +83,10 @@ public class UserResource {
 	
 	@POST
 	public User createUser(String json) {
+		/*
+			API: POST - /webapi/users
+			API to create the user.
+		*/
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
@@ -86,6 +101,10 @@ public class UserResource {
 	@PUT
 	@Path("/{id}")
 	public User editUser(@PathParam("id") String id, String json) {
+		/*
+			API: PUT - /webapi/users/{id}
+			API to edit the user.
+		*/
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
@@ -99,6 +118,10 @@ public class UserResource {
 	@DELETE
 	@Path("/delete/{id}")
 	public String deleteUser(@PathParam("id") String id) {
+		/*
+			API: DELETE - /webapi/users/{id}
+			API to delete the user.
+		*/
 	 	authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 	 	
 	 	RequestRepository req_repo = RequestRepository.getInstance();

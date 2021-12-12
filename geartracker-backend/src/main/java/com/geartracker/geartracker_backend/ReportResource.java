@@ -35,6 +35,9 @@ public class ReportResource {
 	private HttpHeaders httpHeaders;
 	
 	private void authenticate(ArrayList<String> roles) {
+		/*
+			Funtion to authenticate based on roles.
+		*/
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
@@ -51,10 +54,13 @@ public class ReportResource {
 	}
 	
 	@GET
-	@Path("/equipment/{type}")
+	@Path("/equipment/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public HashMap<String, Integer> getEquipmentStatusReport(@PathParam("type") String status) {
-		//Report for discarded/lost/broken
+	public HashMap<String, Integer> getEquipmentStatusReport(@PathParam("status") String status) {
+		/*
+			API: GET - /webapi/report/equipment/{status}
+			API to fetch the count of each equipments with the given status.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		if(!allowed_equipment_status.contains(status)) {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -86,7 +92,10 @@ public class ReportResource {
 	@Path("/requests")
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getRequestCount() {
-		//Report for number of closed requests per equipment category(name)
+		/*
+			API: GET - /webapi/report/requests
+			API to fetch the count of closed requests per equipment category(name)
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
@@ -117,6 +126,10 @@ public class ReportResource {
 	@Path("/requests/aggregate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Integer getTotalCount() {
+		/*
+			API: GET - /webapi/report/requests/aggregate
+			API to fetch the total count of closed requests.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			HashMap<String, Integer> map = getRequestCount();
@@ -128,10 +141,13 @@ public class ReportResource {
 	}
 	
 	@GET
-	@Path("/requests/{type}")
+	@Path("/requests/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Integer getRequestStatusReport(@PathParam("type") String status) {
-		//Report for open/issued/...
+	public Integer getRequestStatusReport(@PathParam("status") String status) {
+		/*
+			API: GET - /webapi/report/requests/{status}
+			API to fetch the count of requests for the given status.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			List<Request> requests = request_repo.getRequestsList();
@@ -150,10 +166,13 @@ public class ReportResource {
 	}
 
 	@POST
-	@Path("/equipment/{type}")
+	@Path("/equipment/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public HashMap<String, Integer> getEquipmentStatusReportWithinDate(@PathParam("type") String status, DatePair dPair) {
-		//Report for discarded/lost/broken
+	public HashMap<String, Integer> getEquipmentStatusReportWithinDate(@PathParam("status") String status, DatePair dPair) {
+		/*
+			API: POST - /webapi/report/equipment/{status}
+			API to fetch the count of each equipment with the given status(lost/broken/discarded) within the given dates.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		if(!allowed_equipment_status.contains(status)) {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -187,7 +206,10 @@ public class ReportResource {
 	@Path("/requests")
 	@Produces(MediaType.APPLICATION_JSON)
 	public HashMap<String, Integer> getRequestCountWithinData(DatePair dPair) {
-		//Report for number of closed requests per equipment category(name)
+		/*
+			API: POST - /webapi/report/requests
+			API to fetch the count of requests for each equipment with the given date.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			LocalDate startDate = Utils.string_to_date(dPair.getStartDate());

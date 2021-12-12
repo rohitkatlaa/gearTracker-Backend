@@ -31,6 +31,9 @@ public class UserRepository {
 		return repo;
 	}
 
+	/*
+		Function to fetch the surrogate id from the user id.
+	*/
 	public int getSurrogateId(String id) {
 		String sqlQuery = "select surrogate_id from user where user_id = '" + id + "'";
 		try {
@@ -47,6 +50,9 @@ public class UserRepository {
 		return Constants.ERROR_STATUS;
 	}
 
+	/*
+		Function to fetch the user id from its surrogate id.
+	*/
 	public String getUserId(int id) {
 		String sqlQuery = "select user_id from user where surrogate_id = '" + id + "'";
 		try {
@@ -63,8 +69,10 @@ public class UserRepository {
 		return Constants.FAILURE_STATUS;
 	}
 
-
-	public User login(String id, String password) //Return user if id and password exists else return null
+	/*
+		Function to fetch the user from the user id and the password.
+	*/
+	public User login(String id, String password)
 	{
 		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND password = '" + password + "'";
 		User u = new User();
@@ -110,6 +118,9 @@ public class UserRepository {
 		return u;
 	}
 
+	/*
+		Function to fetch the list of users from the database.
+	*/
 	public List<User> getUsersList() {
 		List<User> users = new ArrayList<>();
 		String sqlQuery1 = "select * from user";
@@ -158,6 +169,9 @@ public class UserRepository {
 		return users;
 	}
 
+	/*
+		Function to fetch the user from the id from the database.
+	*/
 	public User getUserById(String id) {
 		String sqlQuery1 = "select * from user where user_id = '" + id + "'";
 		User u = new User();
@@ -200,6 +214,9 @@ public class UserRepository {
 		return u;
 	}
 
+	/*
+		Function to create an users in the database.
+	*/
 	public User createUser(User u) {
 		ResultSet rs4 = null;
         int stu_surrogate_id = 0;
@@ -257,6 +274,9 @@ public class UserRepository {
 		return getUserById(u.getId());
 	}
 
+	/*
+		Function to edit an users in the database.
+	*/
 	public User editUser(String id,User newU)
 	{
 		String sqlQuery1 = "UPDATE user SET name=?,password=?,email=? WHERE user_id = '" + id + "'";
@@ -290,7 +310,6 @@ public class UserRepository {
 			}
 			ArrayList<String> new_roles = newU.getRoles();
 
-
 			for (String e : old_roles) {
 				if(!new_roles.contains(e))
 				{
@@ -312,6 +331,9 @@ public class UserRepository {
 		return getUserById(newU.getId()); 
 	}
 	
+	/*
+		Function to delete an users from the database.
+	*/
 	public String deleteUser(User u,String id) {
 		try {
 			Statement st = conn.createStatement();

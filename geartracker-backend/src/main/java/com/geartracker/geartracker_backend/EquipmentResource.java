@@ -46,6 +46,9 @@ public class EquipmentResource {
 	private HttpHeaders httpHeaders;
 	
 	private void authenticate(ArrayList<String> roles) {
+		/*
+			Funtion to authenticate based on roles.
+		*/
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
@@ -64,6 +67,10 @@ public class EquipmentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipments() {
+		/*
+			API: GET - /webapi/equipments
+			API to fetch the list of equipments.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		return equipment_repo.getEquipmentsList();
 	}
@@ -72,6 +79,10 @@ public class EquipmentResource {
 	@Path("/student/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Equipment> getEquipmentsForStudent(@PathParam("id") String id) {
+		/*
+			API: GET - /webapi/equipments/student/{id}
+			API to fetch the list of equipments of a student.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			List<Request> requests = request_repo.getRequestsListForStudent(id);
@@ -93,6 +104,10 @@ public class EquipmentResource {
 	@GET
 	@Path("/available")
 	public List<Equipment> getAvailableEquipment() {
+		/*
+			API: GET - /webapi/equipments/available
+			API to fetch the list of equipments that is available.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return equipment_repo.getAvailableEquipment();
@@ -105,6 +120,10 @@ public class EquipmentResource {
 	@GET
 	@Path("/{id}")
 	public Equipment getEquipment(@PathParam("id") String id) {
+		/*
+			API: GET - /webapi/equipments/{id}
+			API to fetch the equipment from the id.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return equipment_repo.getEquipmentById(id);
@@ -117,6 +136,10 @@ public class EquipmentResource {
 	@POST
 	@Path("/book/{id}")
 	public String bookEquipment(@PathParam("id") String id, String body) {
+		/*
+			API: POST - /webapi/equipments/book/{id}
+			API to book the equipments if it is available.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			UserId user_id = gson.fromJson(body, UserId.class);
@@ -142,6 +165,10 @@ public class EquipmentResource {
 	
 	@POST
 	public Equipment createEquipment(Equipment equipment) {
+		/*
+			API: POST - /webapi/equipments/
+			API to create and equipments.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			equipment_repo.createEquipment(equipment);
@@ -155,6 +182,10 @@ public class EquipmentResource {
 	@PUT
 	@Path("/{id}")
 	public Equipment editEquipment(@PathParam("id") String id, Equipment equipment) {
+		/*
+			API: PUT - /webapi/equipments/{id}
+			API to edit an equipment.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return equipment_repo.editEquipment(id, equipment);
@@ -167,6 +198,10 @@ public class EquipmentResource {
 	@DELETE
 	@Path("/{id}")
 	public String deleteEquipment(@PathParam("id") String id) {
+		/*
+			API: DELETE - /webapi/equipments/{id}
+			API to delete the equipments.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			RequestRepository req_repo = RequestRepository.getInstance();

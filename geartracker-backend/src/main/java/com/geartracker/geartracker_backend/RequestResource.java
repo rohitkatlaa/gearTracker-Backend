@@ -44,6 +44,9 @@ public class RequestResource {
 	private HttpHeaders httpHeaders;
 	
 	private void authenticate(ArrayList<String> roles) {
+		/*
+			Funtion to authenticate based on roles.
+		*/
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
@@ -62,6 +65,10 @@ public class RequestResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequests() {
+		/*
+			API: GET - /webapi/requests
+			API to fetch the list of requests.
+		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return request_repo.getRequestsList();
@@ -75,6 +82,10 @@ public class RequestResource {
 	@Path("/cron")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String startCronJob() {
+		/*
+			API: GET - /webapi/requests/cron
+			API to start the cron job of calculating the fine on the list of requests.
+		*/
 		try {
 			if(!LateFineCalculation.getInstance().getRunning()) {
 				LateFineCalculation.getInstance().setRunning(true);
@@ -91,6 +102,10 @@ public class RequestResource {
 	@Path("/student/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequestsForStudent(@PathParam("id") String id) {
+		/*
+			API: GET - /webapi/requests/student/id
+			API to fetch the list of requests of a student.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return request_repo.getRequestsListForStudent(id);
@@ -103,6 +118,10 @@ public class RequestResource {
 	@GET
 	@Path("/{id}")
 	public Request getRequestById(@PathParam("id") int id) {
+		/*
+			API: GET - /webapi/requests/{id}
+			API to fetch the request from the id.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return request_repo.getRequestById(id);
@@ -114,6 +133,10 @@ public class RequestResource {
 	
 	@POST
 	public Request createRequest(Request r) {
+		/*
+			API: POST - /webapi/requests
+			API to create the requests.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			request_repo.createRequest(r);
@@ -127,6 +150,10 @@ public class RequestResource {
 	@PUT
 	@Path("/{id}")
 	public Request editRequest(@PathParam("id") int id, Request r) {
+		/*
+			API: PUT - /webapi/requests
+			API to edit the requests.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return request_repo.editRequest(id, r);
@@ -139,6 +166,10 @@ public class RequestResource {
 	@PUT
 	@Path("/approve/{id}")
 	public String approveRequest(@PathParam("id") int id) {
+		/*
+			API: PUT - /webapi/requests/approve/{id}
+			API to change the status of the request to approve.
+		*/
 		authenticate(Constants.SUPER_USER_ROLES);
 		try {
 			Request r = request_repo.getRequestById(id);
@@ -160,6 +191,10 @@ public class RequestResource {
 	@PUT
 	@Path("/close/{id}")
 	public String closeRequest(@PathParam("id") int id, String body) {
+		/*
+			API: PUT - /webapi/requests/approve/{id}
+			API to change the status of the request to close and set the status for the equipment.
+		*/
 		authenticate(Constants.SUPER_USER_ROLES);
 		try {
 			Status s = gson.fromJson(body, Status.class);

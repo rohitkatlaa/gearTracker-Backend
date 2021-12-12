@@ -20,11 +20,14 @@ public class loginResource {
 	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson(); 
 
+	/*
+		Function to encrypt the given text using the secret key.
+	*/
 	static String encrypt(String strClearText) {
-		String strData="";
+		String strData = "";
 		try {
 			SecretKeySpec skeyspec = new SecretKeySpec(Constants.SECURITY_KEY.getBytes(), Constants.ENCRYPTION_ALG);
-			Cipher cipher = Cipher.getInstance( Constants.ENCRYPTION_ALG);
+			Cipher cipher = Cipher.getInstance(Constants.ENCRYPTION_ALG);
 			cipher.init(Cipher.ENCRYPT_MODE, skeyspec);
 			byte[] encrypted = cipher.doFinal(strClearText.getBytes());
 			strData = Base64.getEncoder().encodeToString(encrypted);
@@ -34,9 +37,11 @@ public class loginResource {
 		return strData;
 	}
 	
+	/*
+		Function to decrypt the given text using the secret key.
+	*/
 	static String decrypt(String encodedString) {
-		String strData="";
-		
+		String strData = "";
 		try {
 			byte[] bytesEncrypted = Base64.getDecoder().decode(encodedString);
 			SecretKeySpec skeyspec=new SecretKeySpec(Constants.SECURITY_KEY.getBytes(), Constants.ENCRYPTION_ALG);
@@ -50,11 +55,17 @@ public class loginResource {
 		return strData;
 	}
 
+	/*
+		Function to fetch the auth key.
+	*/
 	static String getAuthKey(String id, String password) {
 		String data = id + "+" + password;
 		return encrypt(data);
 	}
 	
+	/*
+		Function to fetch the login data from the auth token.
+	*/
 	public static LoginData getLoginCred(String token) {
 		String data_string = decrypt(token);
 		String[] data = data_string.split("\\+");
@@ -69,6 +80,10 @@ public class loginResource {
 	
 	@POST
 	public AuthUser login(String jsonString) {
+		/*
+			API: POST - /webapi/login
+			API from login.
+		*/
 		try {
 			LoginData l_data = gson.fromJson(jsonString, LoginData.class);
 			User u = user_repo.login(l_data.getId(), l_data.getPassword());
