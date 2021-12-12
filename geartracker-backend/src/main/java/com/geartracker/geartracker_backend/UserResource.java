@@ -90,8 +90,12 @@ public class UserResource {
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
-			User u = user_repo.createUser(e);
-			return u;
+			if(user_repo.getUserById(e.getId()).getId()==null) {
+				User u = user_repo.createUser(e);
+				return u;
+			} else {
+				throw new Exception("Duplicate user id");
+			}
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
