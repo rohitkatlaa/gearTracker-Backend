@@ -1,6 +1,10 @@
 package com.geartracker.geartracker_backend;
 
-public class AuthUser extends User{
+public class AuthUser extends User {
+	/*
+		User class that is used to send the auth token while logging in.
+	*/
+
 	private String authToken;
 
 	public AuthUser(User u, String authToken) {

@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -20,7 +21,9 @@ import javax.ws.rs.core.Response;
 
 @Path("users")
 public class UserResource {
-	
+	/*
+		Class that provides the APIs for Users.
+	*/	
 	UserRepository user_repo = UserRepository.getInstance();
 	Gson gson = new Gson();
 	
@@ -28,6 +31,9 @@ public class UserResource {
 	private HttpHeaders httpHeaders;
 	
 	private void authenticate(ArrayList<String> roles) {
+		/*
+			Funtion to authenticate based on roles.
+		*/
 		String token = httpHeaders.getHeaderString("auth-token");
 		LoginData ld = loginResource.getLoginCred(token);
 		if(ld != null) {
@@ -46,7 +52,11 @@ public class UserResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getUsers() {
-		authenticate(Constants.SUPER_USER_ROLES);
+		/*
+			API: GET - /webapi/users
+			API to fetch the list of users.
+		*/
+		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
 			return user_repo.getUsersList();
 		} catch(Exception e) {
@@ -58,6 +68,10 @@ public class UserResource {
 	@GET
 	@Path("/{id}")
 	public User getUser(@PathParam("id") String id) {
+		/*
+			API: GET - /webapi/users/{id}
+			API to fetch the user from the id.
+		*/
 		authenticate(Constants.ALL_ROLES);
 		try {
 			return user_repo.getUserById(id);
@@ -69,6 +83,10 @@ public class UserResource {
 	
 	@POST
 	public User createUser(String json) {
+		/*
+			API: POST - /webapi/users
+			API to create the user.
+		*/
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
@@ -83,6 +101,10 @@ public class UserResource {
 	@PUT
 	@Path("/{id}")
 	public User editUser(@PathParam("id") String id, String json) {
+		/*
+			API: PUT - /webapi/users/{id}
+			API to edit the user.
+		*/
 		authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 		try {
 			User e = gson.fromJson(json, User.class);
@@ -93,9 +115,13 @@ public class UserResource {
 		}
 	}
 	
-	@PUT
+	@DELETE
 	@Path("/delete/{id}")
 	public String deleteUser(@PathParam("id") String id) {
+		/*
+			API: DELETE - /webapi/users/{id}
+			API to delete the user.
+		*/
 	 	authenticate(new ArrayList<String>(Arrays.asList(Constants.ADMIN_ROLE)));
 	 	
 	 	RequestRepository req_repo = RequestRepository.getInstance();
@@ -106,7 +132,8 @@ public class UserResource {
 	 			return Constants.USER_ACTIVE_STATUS;
 	 		}
 	 	}
-	 	return user_repo.deleteUser(id);
+	 	User u = user_repo.getUserById(id);
+	 	return user_repo.deleteUser(u, id);
 	}
 	
 }

@@ -5,6 +5,9 @@ import java.util.List;
 import java.sql.*;
 
 public class UserRepository {
+	/* 
+		Class that is used to interact with the Equipment table in the SQL database.
+	*/
 	private Connection conn = null;
 	private static UserRepository repo = null; 
 
@@ -16,7 +19,6 @@ public class UserRepository {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, username, password);
 		} catch(Exception e) {
-			System.out.println("hello");
 			System.out.println(e);
 		}
 
@@ -29,6 +31,9 @@ public class UserRepository {
 		return repo;
 	}
 
+	/*
+		Function to fetch the surrogate id from the user id.
+	*/
 	public int getSurrogateId(String id) {
 		String sqlQuery = "select surrogate_id from user where user_id = '" + id + "'";
 		try {
@@ -45,6 +50,9 @@ public class UserRepository {
 		return Constants.ERROR_STATUS;
 	}
 
+	/*
+		Function to fetch the user id from its surrogate id.
+	*/
 	public String getUserId(int id) {
 		String sqlQuery = "select user_id from user where surrogate_id = '" + id + "'";
 		try {
@@ -61,8 +69,10 @@ public class UserRepository {
 		return Constants.FAILURE_STATUS;
 	}
 
-
-	public User login(String id, String password) //Return user if id and password exists else return null
+	/*
+		Function to fetch the user from the user id and the password.
+	*/
+	public User login(String id, String password)
 	{
 		String sqlQuery1 = "select * from user where user_id = '" + id + "' AND password = '" + password + "'";
 		User u = new User();
@@ -108,6 +118,9 @@ public class UserRepository {
 		return u;
 	}
 
+	/*
+		Function to fetch the list of users from the database.
+	*/
 	public List<User> getUsersList() {
 		List<User> users = new ArrayList<>();
 		String sqlQuery1 = "select * from user";
@@ -156,6 +169,9 @@ public class UserRepository {
 		return users;
 	}
 
+	/*
+		Function to fetch the user from the id from the database.
+	*/
 	public User getUserById(String id) {
 		String sqlQuery1 = "select * from user where user_id = '" + id + "'";
 		User u = new User();
@@ -198,6 +214,9 @@ public class UserRepository {
 		return u;
 	}
 
+	/*
+		Function to create an users in the database.
+	*/
 	public User createUser(User u) {
 		ResultSet rs4 = null;
         int stu_surrogate_id = 0;
@@ -255,6 +274,9 @@ public class UserRepository {
 		return getUserById(u.getId());
 	}
 
+	/*
+		Function to edit an users in the database.
+	*/
 	public User editUser(String id,User newU)
 	{
 		String sqlQuery1 = "UPDATE user SET name=?,password=?,email=? WHERE user_id = '" + id + "'";
@@ -269,7 +291,6 @@ public class UserRepository {
 				String sqlQuery2 = "update student SET fine=?,sports_team=? where surrogate_id = "+ newU.getStudent();
 				PreparedStatement st2 = conn.prepareStatement(sqlQuery2);
 				st2.setInt(1, newU.getFine());
-				System.out.println(newU.getSportsStatus());
 				if(newU.getSportsStatus())
 					st2.setInt(2, 1);
 				else
@@ -289,12 +310,10 @@ public class UserRepository {
 			}
 			ArrayList<String> new_roles = newU.getRoles();
 
-
 			for (String e : old_roles) {
 				if(!new_roles.contains(e))
 				{
 					String sqlDel = "delete from user_role where id_user = "+ _id + " AND role = '" + e + "'";
-					System.out.println("I was deleting "+ sqlDel);
 					st3.executeUpdate(sqlDel);
 				}
 			}
@@ -302,7 +321,6 @@ public class UserRepository {
 				if(!old_roles.contains(e))
 				{
 					String sqlAdd = "insert into user_role (id_user, role) values ("+_id+",'"+ e +"')";
-					System.out.println("I was inserting "+ sqlAdd);
 					st3.executeUpdate(sqlAdd);
 				}
 			}
@@ -313,11 +331,22 @@ public class UserRepository {
 		return getUserById(newU.getId()); 
 	}
 	
-	public String deleteUser(String id) {
-		String sqlQuery_delete = "DELETE from user WHERE id = '" + id +"'";
+	/*
+		Function to delete an users from the database.
+	*/
+	public String deleteUser(User u,String id) {
 		try {
 			Statement st = conn.createStatement();
-			st.executeUpdate(sqlQuery_delete);
+			String sqlQuery = "";
+			if(u.getRoles().contains("student"))
+			{
+				sqlQuery= "DELETE from student WHERE surrogate_id = "+ u.getStudent();
+			}
+			else
+			{
+				sqlQuery= "DELETE from user WHERE user_id = '" + id +"'";
+			}
+			st.executeUpdate(sqlQuery);
 			return Constants.SUCCESS_STATUS;
 			
 		} catch(Exception exc) {
@@ -325,6 +354,7 @@ public class UserRepository {
 		}
 		return Constants.FAILURE_STATUS;
 	}
+
 
 }
 

@@ -1,7 +1,11 @@
 package com.geartracker.geartracker_backend;
+
 import java.util.ArrayList;
 
 public class User {
+	/*
+		Class that used to represent an user.
+	*/
 	protected String id;
 	protected String name;
 	protected String password;

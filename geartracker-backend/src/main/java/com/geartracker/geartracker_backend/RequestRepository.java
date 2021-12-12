@@ -7,7 +7,9 @@ import java.sql.*;
 import java.time.LocalDate;
 
 public class RequestRepository {
-
+	/* 
+		Class that is used to interact with the Requests table in the SQL database.
+	*/
 	List<Request> requests = new ArrayList<>();
 	Connection conn = null;
 	public static HashMap<String, Integer> stats_issue = new HashMap<>();
@@ -35,6 +37,9 @@ public class RequestRepository {
 		return repo;
 	}
 	
+	/*
+		Function to fetch the list of requests from the database.
+	*/
 	public List<Request> getRequestsList() {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests";
@@ -53,7 +58,6 @@ public class RequestRepository {
 				}
 				Date rd = rs.getDate("return_date");
 				LocalDate return_date = (LocalDate)null;
-//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -71,6 +75,9 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	/*
+		Function to fetch the list of requests of a student from the database.
+	*/
 	public List<Request> getRequestsListForStudent(String id) {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests where id_user = (select surrogate_id from user where user_id = '"+ id +"')";
@@ -81,7 +88,6 @@ public class RequestRepository {
 				int request_id = rs.getInt("surrogate_id");
 				int user_surr_id = rs.getInt("id_user");
 				int equipment_surr_id = rs.getInt("id_equipment");
-//				LocalDate issue_date = rs.getDate("issue_date").toLocalDate();
 				Date isd = rs.getDate("issue_date");
 				LocalDate issue_date = (LocalDate)null;
 				if(!rs.wasNull())
@@ -90,7 +96,6 @@ public class RequestRepository {
 				}
 				Date rd = rs.getDate("return_date");
 				LocalDate return_date = (LocalDate)null;
-//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -108,6 +113,9 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	/*
+		Function to fetch the request from the id from the database.
+	*/
 	public Request getRequestById(int id) {
 		String sqlQuery = "select * from requests where surrogate_id = '" + id + "'";
 		Request r = null;
@@ -126,7 +134,6 @@ public class RequestRepository {
 				}
 				Date rd = rs.getDate("return_date");
 				LocalDate return_date = (LocalDate)null;
-//				LocalDate return_date = Constants.RETURN_DATE_DUMMY;
 				if(!rs.wasNull())
 				{
 					return_date = rd.toLocalDate();
@@ -143,6 +150,9 @@ public class RequestRepository {
 		return r;
 	}
 	
+	/*
+		Function to fetch the list of requests for an equipment from the database.
+	*/
 	public List<Request> getRequestsListForEquipment(String id) {
 		List<Request> requests = new ArrayList<>();
 		String sqlQuery = "select * from requests where id_equipment = (select surrogate_id from equipment where equipment_id = '"+ id +"')";
@@ -178,13 +188,15 @@ public class RequestRepository {
 		return requests;
 	}
 	
+	/*
+		Function to create an request in the database.
+	*/
 	public void createRequest(Request r) {
 		String sqlQuery = "insert into requests (id_user,id_equipment,issue_date,return_date,request_status) values (?,?,?,?,?)";
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 			st.setInt(1,r.getUserSurrId());
 			st.setInt(2, r.getEquipmentSurrId());
-//			st.setDate(3, Date.valueOf(r.getIssueDate()));
 			if(r.getIssueDate()==null) {
 				st.setNull(3, Types.DATE);
 			}
@@ -205,13 +217,15 @@ public class RequestRepository {
 		}
 	}
 	
+	/*
+		Function to edit an request in the database.
+	*/
 	public Request editRequest(int id, Request newR) {
 		String sqlQuery = "UPDATE requests SET id_user=?,id_equipment=?,issue_date=?,return_date=?,request_status=? WHERE surrogate_id = " + id;
 		try {
 			PreparedStatement st = conn.prepareStatement(sqlQuery);
 		    st.setInt(1, newR.getUserSurrId());
 		    st.setInt(2, newR.getEquipmentSurrId());
-//		    st.setDate(3, Date.valueOf(newR.getIssueDate()));
 		    if(newR.getIssueDate()==null) {
 				st.setNull(3, Types.DATE);
 			}
@@ -233,6 +247,9 @@ public class RequestRepository {
 		return newR;
 	}
 
+	/*
+		Function to edit the status of an request in the database.
+	*/
 	public String editRequestStatus(int id, String status) {
 		String sqlQuery = "UPDATE requests SET request_status= '" + status + "' WHERE surrogate_id = " + id;
 		try {
@@ -245,6 +262,9 @@ public class RequestRepository {
 		return Constants.SUCCESS_STATUS;
 	}
 	
+	/*
+		Function to edit the issued date of an request in the database.
+	*/
 	public String setRequestIssueDate(int id, LocalDate issue_date) {
 		String sqlQuery = "UPDATE requests SET issue_date= ? WHERE surrogate_id = " + id;
 		try {
@@ -258,6 +278,9 @@ public class RequestRepository {
 		return Constants.SUCCESS_STATUS;
 	}
 	
+	/*
+		Function to edit the return date of an request in the database.
+	*/
 	public String setRequestReturnDate(int id, LocalDate return_date) {
 		String sqlQuery = "UPDATE requests SET return_date= ? WHERE surrogate_id = " + id;
 		try {
@@ -271,6 +294,9 @@ public class RequestRepository {
 		return Constants.SUCCESS_STATUS;
 	}
 
+	/*
+		Function to fetch the last modified date of an request from the database.
+	*/
 	public LocalDate getModifiedDate(int id) {
 		String sqlQuery = "select updated_at from requests where surrogate_id = " + id;
 		try {
