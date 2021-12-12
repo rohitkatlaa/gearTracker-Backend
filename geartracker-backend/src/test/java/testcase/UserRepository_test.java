@@ -45,10 +45,20 @@ public class UserRepository_test{
 		new_usr1.setId("Test1");
 		new_usr1.setName("Sports User");
 		new_usr1.setSportsStatus(true);
+		new_usr1.setEmail("j@iiitb.ac.in");
+		new_usr1.add_roles("student");
+		new_usr1.setStudent(100);
+		//new_usr1.setStudent(null);
+		
 		
 		new_usr2.setId("Test2");
 		new_usr2.setName("Nonsports User");
 		new_usr2.setSportsStatus(false);
+		new_usr2.setEmail("m@iiitb.ac.in");
+		new_usr2.add_roles("student");
+		new_usr2.setStudent(101);
+		
+		//new_usr2.setStudent(null);
 		
 		usr_repo.createUser(new_usr1);
 		usr_repo.createUser(new_usr2);
@@ -92,14 +102,14 @@ public class UserRepository_test{
 		//Tests for deleteUser
 		System.out.println("\n");
 		
-		if(usr_repo.deleteUser("Test1").equals("success")) {
+		if(usr_repo.deleteUser(new_usr1, "Test1").equals("success")) {
 			System.out.println("Test case 1 for deleteUser passed.");
 		}
 		else {
 			System.out.println("Test case 1 for deleteUser failed");
 		}
 		
-		if(usr_repo.deleteUser("Test2").equals("success")) {
+		if(usr_repo.deleteUser(new_usr2, "Test2").equals("success")) {
 			System.out.println("Test case 2 for deleteUser passed.");
 		}
 		else {
