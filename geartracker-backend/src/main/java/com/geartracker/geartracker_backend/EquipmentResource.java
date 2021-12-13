@@ -171,8 +171,12 @@ public class EquipmentResource {
 		*/
 		authenticate(Constants.HIGHER_USER_ROLES);
 		try {
-			equipment_repo.createEquipment(equipment);
-			return equipment;
+			if(equipment_repo.getEquipmentById(equipment.getId()) == null) {
+				equipment_repo.createEquipment(equipment);
+				return equipment;
+			} else {
+				throw new Exception("Duplicate equipment id");
+			}
 		} catch(Exception e) {
 			System.out.println(e);
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
