@@ -203,7 +203,12 @@ public class RequestResource {
 			Equipment e = equipment_repo.getEquipmentById(e_id);
 			if(e.getStatus().equals(Constants.EQUIPMENT_STATUS_ISSUED)) {
 				 if(s.getStatus().equals(Constants.EQUIPMENT_STATUS_LOST) || s.getStatus().equalsIgnoreCase(Constants.EQUIPMENT_STATUS_BROKEN)) {
-				 	UnusableFineCalculation.getInstance().computeFine(e_id);
+					 UnusableCompute compObj = new UnusableCompute();
+					 compObj.setEquipmentId(e_id);
+					 compObj.setRequest(r);
+
+					 FineCalculation.getInstance().setComputeObj(compObj);
+					 FineCalculation.getInstance().scanRequest();
 				 }
 				equipment_repo.editEquipmentStatus(e_id, s.getStatus());
 				request_repo.editRequestStatus(id, Constants.REQUEST_STATUS_CLOSED);

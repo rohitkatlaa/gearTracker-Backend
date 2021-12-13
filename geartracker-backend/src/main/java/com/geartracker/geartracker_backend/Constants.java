@@ -10,7 +10,7 @@ public class Constants {
 	*/
 
 	static final String SQL_URL =  "jdbc:mysql://localhost:3306/geartracker_db?verifyServerCertificate=false&useSSL=true";
-	static final String SQL_USERNAME = "root";
+	static final String SQL_USERNAME = "hemc";
 	static final String SQL_PASSWORD = "narrativearc";
 	
 	static final String MAIL_USERNAME = "geartrackertesting486@gmail.com";
@@ -18,11 +18,11 @@ public class Constants {
 	static final String MAIL_LATE_SUBJECT = "Reminder to return equipment";
 	static final String MAIL_LATE_BODY = "Please return equipment possessed by you. Your current fine is ";
 	static final String MAIL_DAMAGE_SUBJECT = "Fine for damaging equipment";
-	static final String MAIL_DAMAGE_BODY = "You have been fined 100 for making our equipment unusable. Your current fine is ";
+	static final String MAIL_DAMAGE_BODY =  "You have been fined 100 for making our equipment unusable. Your current fine is ";
 	
-	static final int SCAN_INITIAL_DELAY = 1;
-	static final int SCAN_PERIOD = 5; // Assuming in seconds. 
-	static final TimeUnit SCAN_TIMEUNIT = TimeUnit.SECONDS;
+	static final int SCAN_INITIAL_DELAY = 0;
+	static final int SCAN_PERIOD = 1;  
+	static final TimeUnit SCAN_TIMEUNIT = TimeUnit.DAYS;
 	static final int SCAN_DURATION = 1;
 	static final TimeUnit SCAN_DURATIONUNIT = TimeUnit.HOURS;
 	
