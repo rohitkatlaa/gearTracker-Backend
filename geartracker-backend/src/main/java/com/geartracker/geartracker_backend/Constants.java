@@ -21,7 +21,7 @@ public class Constants {
 	static final String MAIL_DAMAGE_BODY =  "You have been fined 100 for making our equipment unusable. Your current fine is ";
 	
 	static final int SCAN_INITIAL_DELAY = 0;
-	static final int SCAN_PERIOD = 7;  
+	static final int SCAN_PERIOD = 1;  
 	static final TimeUnit SCAN_TIMEUNIT = TimeUnit.DAYS;
 	static final int SCAN_DURATION = 1;
 	static final TimeUnit SCAN_DURATIONUNIT = TimeUnit.HOURS;

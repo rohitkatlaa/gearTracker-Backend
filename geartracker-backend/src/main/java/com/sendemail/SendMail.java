@@ -1,5 +1,3 @@
-//Basic template for mailing from https://netcorecloud.com/tutorials/send-email-in-java-using-gmail-smtp/, with improvisation being done as per needs.
-
 package com.sendemail;
 
 import java.util.Properties;
